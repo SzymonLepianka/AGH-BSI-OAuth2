@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_my_profile">
+
+        <fragment
+            android:id="@+id/nav_my_profile"
+            android:name="com.io.routesapp.ui.profile.ProfileFragment"
+            android:label="@string/menu_my_profile"
+            tools:layout="@layout/fragment_profile">
+            <action
+                android:id="@+id/action_nav_my_profile_to_nav_discover_routes"
+                app:destination="@id/nav_discover_routes" />
+            <action
+                android:id="@+id/action_nav_my_profile_to_nav_my_fav_routes"
+                app:destination="@id/nav_my_fav_routes" />
+            <action
+                android:id="@+id/action_nav_my_profile_to_nav_my_fav_places"
+                app:destination="@id/nav_my_fav_places" />
+            <action
+                android:id="@+id/action_nav_my_profile_to_nav_help"
+                app:destination="@id/nav_help" />
+            <action
+                android:id="@+id/action_nav_my_profile_to_nav_discover_places"
+                app:destination="@id/nav_discover_places" />
+        </fragment>
+        <fragment
+            android:id="@+id/nav_discover_places"
+            android:name="com.io.routesapp.ui.places.discoverPlaces.DiscoverPlacesFragment"
+            android:label="@string/menu_discover_places"
+            tools:layout="@layout/fragment_discover_places">
+            <action
+                android:id="@+id/action_nav_discover_places_to_discover_places_map"
+                app:destination="@id/nav_discover_places_map" />
+            <action
+                android:id="@+id/action_nav_discover_places_to_nav_place_information"
+                app:destination="@id/nav_place_information" >
+                <argument
+                        android:name="place_id"
+                        app:argType="integer"
+                        android:defaultValue="1"
+                />
+            </action>
+        </fragment>
+        <fragment
+            android:id="@+id/nav_discover_routes"
+            android:name="com.io.routesapp.ui.routes.discoverRoutes.DiscoverRoutesFragment"
+            android:label="@string/menu_discover_routes"
+            tools:layout="@layout/fragment_discover_routes">
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_my_fav_routes"
+                app:destination="@id/nav_my_fav_routes" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_my_fav_places"
+                app:destination="@id/nav_my_fav_places" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_help"
+                app:destination="@id/nav_help" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_discover_places"
+                app:destination="@id/nav_discover_places" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_my_profile"
+                app:destination="@id/nav_my_profile" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_nav_my_profile2"
+                app:destination="@id/nav_my_profile" />
+            <action
+                android:id="@+id/action_nav_discover_routes_to_routeInformationFragment"
+                app:destination="@id/nav_route_information" />
+        </fragment>
+        <fragment
+            android:id="@+id/nav_my_fav_places"
+            android:name="com.io.routesapp.ui.fav_places.FavouritePlacesFragment"
+            android:label="@string/menu_my_fav_places"
+            tools:layout="@layout/fragment_favourite_places">
+
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_help"
+                app:destination="@id/nav_help" />
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_discover_places"
+                app:destination="@id/nav_discover_places" />
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_my_profile"
+                app:destination="@id/nav_my_profile" />
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_discover_routes"
+                app:destination="@id/nav_discover_routes" />
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_my_fav_routes"
+                app:destination="@id/nav_my_fav_routes" />
+            <action
+                android:id="@+id/action_nav_my_fav_places_to_nav_fav_places_map"
+                app:destination="@id/nav_fav_places_map" />
+        </fragment>
+        <fragment
+            android:id="@+id/nav_my_fav_routes"
+            android:name="com.io.routesapp.ui.fav_routes.FavouriteRoutesFragment"
+            android:label="@string/menu_my_fav_routes"
+            tools:layout="@layout/fragment_favourite_routes">
+            <action
+                android:id="@+id/action_nav_my_fav_routes_to_nav_my_fav_places"
+                app:destination="@id/nav_my_fav_places" />
+            <action
+                android:id="@+id/action_nav_my_fav_routes_to_nav_help"
+                app:destination="@id/nav_help" />
+            <action
+                android:id="@+id/action_nav_my_fav_routes_to_nav_discover_places"
+                app:destination="@id/nav_discover_places" />
+            <action
+                android:id="@+id/action_nav_my_fav_routes_to_nav_my_profile"
+                app:destination="@id/nav_my_profile" />
+
+        </fragment>
+        <fragment
+            android:id="@+id/nav_help"
+            android:name="com.io.routesapp.ui.help.HelpFragment"
+            android:label="@string/menu_help"
+            tools:layout="@layout/fragment_help">
+            <action
+                android:id="@+id/action_nav_help_to_nav_discover_places"
+                app:destination="@id/nav_discover_places" />
+            <action
+                android:id="@+id/action_nav_help_to_nav_my_profile"
+                app:destination="@id/nav_my_profile" />
+            <action
+                android:id="@+id/action_nav_help_to_nav_discover_routes"
+                app:destination="@id/nav_discover_routes" />
+            <action
+                android:id="@+id/action_nav_help_to_nav_my_fav_routes"
+                app:destination="@id/nav_my_fav_routes" />
+            <action
+                android:id="@+id/action_nav_help_to_nav_my_fav_places"
+                app:destination="@id/nav_my_fav_places" />
+        </fragment>
+    <fragment
+        android:id="@+id/nav_discover_places_map"
+        android:name="com.io.routesapp.ui.places.discoverPlaces.DiscoverPlacesMapFragment"
+        android:label="Discover places on map"
+        tools:layout="@layout/fragment_discover_places_map" >
+        <action
+            android:id="@+id/action_discoverPlacesMapFragment_to_nav_discover_places"
+            app:destination="@id/nav_discover_places" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_place_information"
+        android:name="com.io.routesapp.ui.places.placeInformation.PlaceInformationFragment"
+        android:label="Place details" >
+        <action
+            android:id="@+id/action_nav_place_information_to_nav_discover_places"
+            app:destination="@id/nav_discover_places" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_route_information"
+        android:name="com.io.routesapp.ui.routes.routeInformation.RouteInformationFragment"
+        android:label="Route details" >
+        <action
+            android:id="@+id/action_routeInformationFragment_to_nav_discover_routes"
+            app:destination="@id/nav_discover_routes" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_fav_places_map"
+        android:name="com.io.routesapp.ui.fav_places.FavouritePlacesMapFragment"
+        android:label="Favourite places"
+        tools:layout="@layout/fragment_favourite_places_map" >
+        <action
+            android:id="@+id/action_favouritePlacesMapFragment_to_nav_my_fav_places"
+            app:destination="@id/nav_my_fav_places" />
+    </fragment>
+</navigation>

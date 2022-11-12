@@ -1,0 +1,865 @@
+{
+	"info": {
+		"_postman_id": "5519ca27-cb02-4df1-864e-6f9c8c4c4367",
+		"name": "IO_SightseeingApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API_Tests",
+			"item": [
+				{
+					"name": "UsersController",
+					"item": [
+						{
+							"name": "getUserById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Creating user\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/?username=slepianka4&firstname=Szymon3&surname=Lepianka3&birthdate=12.12.2020&password=siema123",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										""
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "slepianka4"
+										},
+										{
+											"key": "firstname",
+											"value": "Szymon3"
+										},
+										{
+											"key": "surname",
+											"value": "Lepianka3"
+										},
+										{
+											"key": "birthdate",
+											"value": "12.12.2020"
+										},
+										{
+											"key": "password",
+											"value": "siema123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting user\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "didUserVoteForPlace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Checking if user vote for place\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/1/placeVotes/6",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1",
+										"placeVotes",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userVoteForPlace",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/1/placeVotes/4?vote=5",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1",
+										"placeVotes",
+										"4"
+									],
+									"query": [
+										{
+											"key": "vote",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "TestController",
+					"item": [
+						{
+							"name": "addNewUser",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Getting All Users\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/add?username=slepianka121&password=password&email=slepianka@wp.pl7&firstName=Szymon&surname=Lepianka&birthDate=08.09.1999",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"add"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "slepianka121"
+										},
+										{
+											"key": "password",
+											"value": "password"
+										},
+										{
+											"key": "email",
+											"value": "slepianka@wp.pl7"
+										},
+										{
+											"key": "firstName",
+											"value": "Szymon"
+										},
+										{
+											"key": "surname",
+											"value": "Lepianka"
+										},
+										{
+											"key": "birthDate",
+											"value": "08.09.1999"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PlacesController",
+					"item": [
+						{
+							"name": "getAllPlaces",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Getting All Places\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPlace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Getting Place By ID\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/2",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPlace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding New Place\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/?name=miejscówka3&description=To też jest super miejsce3&latitude=103.0&longitude=203.0",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										""
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "miejscówka3"
+										},
+										{
+											"key": "description",
+											"value": "To też jest super miejsce3"
+										},
+										{
+											"key": "latitude",
+											"value": "103.0"
+										},
+										{
+											"key": "longitude",
+											"value": "203.0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePlace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting Place\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPlaceComments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Getting Place Comment By PlaceID\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/10/comments",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										"10",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPlaceComment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Comment To Place\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/10/comments/?userId=1&content=Sztos miejsce mega",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										"10",
+										"comments",
+										""
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "userId",
+											"value": "1"
+										},
+										{
+											"key": "content",
+											"value": "Sztos miejsce mega"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePlaceComment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting Place Comment\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/places/10/comments/18",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"places",
+										"10",
+										"comments",
+										"18"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "RoutesController",
+					"item": [
+						{
+							"name": "addRoute",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"addRoute\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{url}}/routes?ispublic=True&userID=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes"
+									],
+									"query": [
+										{
+											"key": "ispublic",
+											"value": "True"
+										},
+										{
+											"key": "userID",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getRoute",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllRoutes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteRoute",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"deleteRoute\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPoint",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Creating pointOfRoute\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1/PointsOfRoute?routeId=1&pointNumber=1&placeID=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1",
+										"PointsOfRoute"
+									],
+									"query": [
+										{
+											"key": "routeId",
+											"value": "1"
+										},
+										{
+											"key": "pointNumber",
+											"value": "1"
+										},
+										{
+											"key": "placeID",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllPoints",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1/PointsOfRoute",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1",
+										"PointsOfRoute"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePoint",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting Route Point\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1/PointsOfRoute/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1",
+										"PointsOfRoute",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addRouteComment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Adding Comment To Route\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/10/comments/?userId=1&content=Sztos droga mega",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"10",
+										"comments",
+										""
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "1"
+										},
+										{
+											"key": "content",
+											"value": "Sztos droga mega"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getRouteComments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Getting Route Comment By RouteID\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/10/comments",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"10",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteRouteComment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting Route Comment\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/routes/1/comments/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"routes",
+										"1",
+										"comments",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

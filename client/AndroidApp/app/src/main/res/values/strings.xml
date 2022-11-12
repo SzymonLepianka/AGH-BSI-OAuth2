@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Routes App</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="log_out">Log out</string>
+    <string name="delete_account">Delete profile</string>
+
+    <string name="settings">settings</string>
+
+    <string name="menu_my_profile">My profile</string>
+    <string name="menu_discover_places">Discover places</string>
+    <string name="menu_discover_routes">Discover routes</string>
+    <string name="menu_my_fav_places">Favourite places</string>
+    <string name="menu_my_fav_routes">Favourite routes</string>
+    <string name="menu_help">Help</string>
+
+    <string name="user_name">Jane</string>
+    <string name="user_surname">Doe</string>
+    <string name="user_username">username000</string>
+    <string name="title_activity_login">Login</string>
+    <string name="prompt_email">OAuth2 service username</string>
+    <string name="prompt_password">OAuth2 service password</string>
+    <string name="action_create_acount">Create an account</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_oauth2">Sign in with oauth2</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+    <string name="rate">Rate: </string>
+    <string name="leave_your_comment">Share your opinion here</string>
+
+    <string name="baseUrl">http://10.0.2.2:8080/</string>
+
+    <string name="dp_login_url">http://10.0.2.2:8081/web/login</string>
+    <string name="dp_exchange_url">http://10.0.2.2:8081/api/createToken?clientID=2&amp;authCode=</string>
+    <string name="be_the_first_to_leave_a_comment">Be the first to leave a comment!</string>
+</resources>
