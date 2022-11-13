@@ -1,0 +1,23 @@
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Login page</title></head>
+<body>
+<form method="POST" action="/web/login">
+    <h1>Zaloguj się</h1>
+    <table>
+        <tr>
+            <td><label for="username">Username</label></td>
+            <td><input type="text" name="username" id="username"/></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td><input type="password" name="password" id="password"/></td>
+        </tr>
+        <tr>
+            <input type="hidden" name="clientID" id="clientID" th:value="${clientID}"/>
+            <td><input type="submit" value="Loguj!"/></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
