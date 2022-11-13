@@ -5,13 +5,23 @@ import bgs.oauth_server.dao.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.util.*;
 
-public class CreatingRefreshToken extends State {
+@Service("CreatingRefreshToken")
+public class CreatingRefreshToken implements State {
+
+    @Autowired
+    private AccessTokensAccessService accessTokensAccessService;
+    @Autowired
+    private RefreshTokensAccessService refreshTokensAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
@@ -33,8 +43,7 @@ public class CreatingRefreshToken extends State {
         Long clientID = Long.parseLong(params.get("clientID"));
 
         // odczytuję stworzony w CreatingAccessToken accessToken
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        List<AccessToken> accessTokenList = db.getAccessTokensAccessObject().readAll();
+        List<AccessToken> accessTokenList = accessTokensAccessService.readAll();
         AccessToken accessToken = accessTokenList.stream()
                 .filter(at -> expiresAt.equals(at.getExpiresAt()) && clientID.equals(at.getClientApp().getId()) && scopes.equals(at.getScopes()))
                 .findFirst()
@@ -45,10 +54,10 @@ public class CreatingRefreshToken extends State {
         refreshToken.setAccessToken(accessToken);
         refreshToken.setExpiresAt(Timestamp.valueOf(createdAt.toLocalDateTime().plusDays(1)));
         refreshToken.setRevoked(false);
-        db.getRefreshTokensAccessObject().create(refreshToken);
+        refreshTokensAccessService.create(refreshToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
-        Long appSecret = db.getAppsAccessObject().readById(clientID).getAppSecret();
+        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // buduję refreshToken
         RefreshTokenBuilder refreshTokenBuilder = new RefreshTokenBuilder(refreshToken.getExpiresAt(), refreshToken.getAccessToken().getId(), appSecret);

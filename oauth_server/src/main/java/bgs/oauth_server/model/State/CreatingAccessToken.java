@@ -3,21 +3,33 @@ package bgs.oauth_server.model.State;
 import bgs.oauth_server.dao.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.time.*;
 import java.util.*;
 
-public class CreatingAccessToken extends State {
+@Service("CreatingAccessToken")
+public class CreatingAccessToken implements State {
+
+    @Autowired
+    private AuthCodesAccessService authCodesAccessService;
+    @Autowired
+    private PermissionsAccessService permissionsAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private UsersAccessService usersAccessService;
+    @Autowired
+    private AccessTokensAccessService accessTokensAccessService;
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
 
         System.out.println("CreatingAccessToken");
-
-        IDatabaseEditor db = DatabaseEditor.getInstance();
 
         Long clientID, userID;
         // przypadek CreatingAuthorizationCode
@@ -27,7 +39,7 @@ public class CreatingAccessToken extends State {
             clientID = Long.parseLong(params.get("clientID"));
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
-            List<AuthCode> codesFromDataBase = db.getAuthCodesAccessObject().readAll();
+            List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
             AuthCode authCode = codesFromDataBase.stream()
                     .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
                     .findFirst()
@@ -50,7 +62,7 @@ public class CreatingAccessToken extends State {
         // tworzę String scopes (parametr tokenu)
         // - pobieram wszsytkie permissions
         // - jeśli w danym permission zgadza się clientID i userID dodaję do 'scopes'
-        List<Permission> permissionsFromDataBase = db.getPermissionsAccessObject().readAll();
+        List<Permission> permissionsFromDataBase = permissionsAccessService.readAll();
         StringBuilder scopes = new StringBuilder();
         for (Permission permission : permissionsFromDataBase) {
             if (permission.getClientApp().getId().equals(clientID) && permission.getUser().getId().equals(userID)) {
@@ -84,20 +96,20 @@ public class CreatingAccessToken extends State {
 
         // tworzę obiekt accessToken - zapisuję do niego parametry i zapisuję do bazy danych
         AccessToken accessToken = new AccessToken();
-        accessToken.setClientApp(db.getAppsAccessObject().readById(clientID));
+        accessToken.setClientApp(appsAccessService.readById(clientID));
         accessToken.setCreatedAt(createdAt);
         accessToken.setExpiresAt(expiresAt);
         accessToken.setRevoked(false);
         accessToken.setScopes(scopes.toString());
-        accessToken.setUser(db.getUsersAccessObject().readById(userID));
+        accessToken.setUser(usersAccessService.readById(userID));
         accessToken.setUpdatedAt(createdAt);
-        db.getAccessTokensAccessObject().create(accessToken);
+        accessTokensAccessService.create(accessToken);
 
         // czytam z danych appSecret clienta z danym clientID
-        Long appSecret = db.getAppsAccessObject().readById(clientID).getAppSecret();
+        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // czytam z danych username z danym userID
-        String username = db.getUsersAccessObject().readById(userID).getUsername();
+        String username = usersAccessService.readById(userID).getUsername();
 
         // buduję accessToken
         AccessTokenBuilder accessTokenBuilder = new AccessTokenBuilder(createdAt, expiresAt, scopes.toString(), clientID, userID, username, appSecret);

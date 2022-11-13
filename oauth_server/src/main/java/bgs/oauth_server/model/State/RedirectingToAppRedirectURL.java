@@ -2,11 +2,20 @@ package bgs.oauth_server.model.State;
 
 import bgs.oauth_server.dao.*;
 import bgs.oauth_server.domain.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import java.sql.*;
 import java.util.*;
 
-public class RedirectingToAppRedirectURL extends State {
+@Service("RedirectingToAppRedirectURL")
+public class RedirectingToAppRedirectURL implements State {
+
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private AuthCodesAccessService authCodesAccessService;
+
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
@@ -17,8 +26,7 @@ public class RedirectingToAppRedirectURL extends State {
         Long clientID = Long.parseLong(params.get("clientID"));
 
         // biorę z bazy danych redirectURL danego klienta
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        String redirectURL = db.getAppsAccessObject().readById(clientID).getRedirectURL();
+        String redirectURL = appsAccessService.readById(clientID).getRedirectURL();
 
         // przypadek scopes -> AuthCode
         if (params.containsKey("code") && !params.containsKey("createdRefreshToken")) {
@@ -27,7 +35,7 @@ public class RedirectingToAppRedirectURL extends State {
             String code = params.get("code");
 
             // biorę wszystkie AuthCodes z bazy danych i sprawdzam czy istnieje o takich parametrach jak w params
-            List<AuthCode> authCodes = db.getAuthCodesAccessObject().readAll();
+            List<AuthCode> authCodes = authCodesAccessService.readAll();
             AuthCode authCode = authCodes.stream()
                     .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
                     .findFirst()

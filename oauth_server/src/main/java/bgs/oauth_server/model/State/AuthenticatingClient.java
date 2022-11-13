@@ -1,13 +1,19 @@
 package bgs.oauth_server.model.State;
 
 import bgs.oauth_server.dao.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.util.*;
 
-public class AuthenticatingClient extends State {
+@Service("AuthenticatingClient")
+public class AuthenticatingClient implements State {
+
+    @Autowired
+    private AppsAccessService appsAccessService;
 
 //    Singleton
 //    private static AuthenticatingClient instance = new AuthenticatingClient();
@@ -30,8 +36,7 @@ public class AuthenticatingClient extends State {
         System.out.println("AuthenticatingClient");
 
         // sprawdzam czy klient o danych clientId w params istnieje w bazie danych
-        IDatabaseEditor dbEditor = DatabaseEditor.getInstance();
-        if (dbEditor.getAppsAccessObject().readById((Long.parseLong(params.get("clientID")))) != null) {
+        if (appsAccessService.readById((Long.parseLong(params.get("clientID")))) != null) {
             context.changeState(new VerifyingDataFromClient());
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client with clientID=" + params.get("clientID") + " does not exist");

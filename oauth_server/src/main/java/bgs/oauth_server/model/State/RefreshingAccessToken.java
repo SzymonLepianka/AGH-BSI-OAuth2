@@ -3,11 +3,18 @@ package bgs.oauth_server.model.State;
 import bgs.oauth_server.dao.*;
 import bgs.oauth_server.token.*;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.stereotype.*;
 
 import java.sql.*;
 import java.util.*;
 
-public class RefreshingAccessToken extends State {
+@Service("RefreshingAccessToken")
+public class RefreshingAccessToken implements State {
+
+    @Autowired
+    private AccessTokensAccessService accessTokensAccessService;
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
@@ -25,12 +32,11 @@ public class RefreshingAccessToken extends State {
         Long accessTokenID = Long.parseLong(claims.get("access_token_id").toString());
 
         // pobieram z bazy danych userID i dodaję do params
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        Long userID = db.getAccessTokensAccessObject().readById(accessTokenID).getUser().getId();
+        Long userID = accessTokensAccessService.readById(accessTokenID).getUser().getId();
         params.put("userID", userID.toString());
 
         // usuwam były accessToken
-        db.getAccessTokensAccessObject().remove(db.getAccessTokensAccessObject().readById(accessTokenID));
+        accessTokensAccessService.remove(accessTokensAccessService.readById(accessTokenID));
 
         // zmieniam stan na CreatingAccessToken
         context.changeState(new CreatingAccessToken());

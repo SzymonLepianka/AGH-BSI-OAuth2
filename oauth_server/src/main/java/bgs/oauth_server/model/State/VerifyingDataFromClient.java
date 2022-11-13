@@ -6,14 +6,25 @@ import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.time.*;
 import java.util.*;
 
-public class VerifyingDataFromClient extends State {
+@Service("VerifyingDataFromClient")
+public class VerifyingDataFromClient implements State {
+
+    @Autowired
+    private AuthCodesAccessService authCodesAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private RefreshTokensAccessService refreshTokensAccessService;
+
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
@@ -32,8 +43,7 @@ public class VerifyingDataFromClient extends State {
             Long clientID = Long.parseLong(params.get("clientID"));
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
-            IDatabaseEditor db = DatabaseEditor.getInstance();
-            List<AuthCode> codesFromDataBase = db.getAuthCodesAccessObject().readAll();
+            List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
             AuthCode authCode = codesFromDataBase.stream()
                     .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
                     .findFirst()
@@ -48,12 +58,12 @@ public class VerifyingDataFromClient extends State {
             }
 
             // sprawdzam czy AuthCode nie jest revoked
-            if (authCode.isRevoked()){
+            if (authCode.isRevoked()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Auth Code is revoked");
             }
 
             // sprawdzam czy AuthCode nie jest expired
-            if (authCode.getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()))){
+            if (authCode.getExpiresAt().before(Timestamp.valueOf(LocalDateTime.now()))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Auth Code is expired");
             }
 
@@ -64,8 +74,7 @@ public class VerifyingDataFromClient extends State {
             Long clientID = Long.parseLong(params.get("clientID"));
 
             // czytam z danych danych appSecret clienta z danym clientID
-            IDatabaseEditor db = DatabaseEditor.getInstance();
-            Long appSecret = db.getAppsAccessObject().readById(clientID).getAppSecret();
+            Long appSecret = appsAccessService.readById(clientID).getAppSecret();
             params.put("appSecret", appSecret.toString());
 
             //dekoduję z otrzymanego tokenu accessTokenID i expiration
@@ -78,7 +87,7 @@ public class VerifyingDataFromClient extends State {
             Timestamp expiration = Timestamp.valueOf(Timestamp.valueOf(date + " " + time).toLocalDateTime().plusHours(1));
 
             // pobieram z bazy danych refreshTokens i szukam przekazanego w params 'refreshToken'
-            List<RefreshToken> refreshTokens = db.getRefreshTokensAccessObject().readAll();
+            List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
             RefreshToken findRefreshToken = refreshTokens.stream()
                     .filter(rt -> accessTokenID.equals(rt.getAccessToken().getId()) && (expiration.equals(rt.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(rt.getExpiresAt())) && clientID.equals(rt.getAccessToken().getClientApp().getId()))
                     .findFirst()
@@ -95,7 +104,7 @@ public class VerifyingDataFromClient extends State {
             }
 
             // usuwam były refreshtoken
-            db.getRefreshTokensAccessObject().remove(findRefreshToken);
+            refreshTokensAccessService.remove(findRefreshToken);
 
             context.changeState(new RefreshingAccessToken());
 

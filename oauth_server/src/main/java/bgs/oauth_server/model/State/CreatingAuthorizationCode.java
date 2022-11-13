@@ -6,7 +6,9 @@ import bgs.oauth_server.domain.*;
 
 import bgs.oauth_server.domain.Permission;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.security.*;
@@ -15,7 +17,20 @@ import java.sql.*;
 import java.time.*;
 import java.util.*;
 
-public class CreatingAuthorizationCode extends State {
+@Service("CreatingAuthorizationCode")
+public class CreatingAuthorizationCode implements State {
+
+    @Autowired
+    private UsersAccessService usersAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private AuthCodesAccessService authCodesAccessService;
+    @Autowired
+    private ScopesAccessService scopesAccessService;
+    @Autowired
+    private PermissionsAccessService permissionsAccessService;
+
 
     @Override
     public Response handle(Context context, Map<String, String> params) throws SQLException {
@@ -25,13 +40,12 @@ public class CreatingAuthorizationCode extends State {
         Long clientID = Long.parseLong(params.get("clientID"));
 
         // pobieram z bazy obiekt User dla danego 'username'
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        var user = db.getUsersAccessObject().readById(Long.parseLong(params.get("userID")));
-        if(user == null) {
+        var user = usersAccessService.readById(Long.parseLong(params.get("userID")));
+        if (user == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         var username = user.getUsername();
-        List<User> users = db.getUsersAccessObject().readAll();
+        List<User> users = usersAccessService.readAll();
         User user1 = users.stream()
                 .filter(x -> username.equals(x.getUsername()))
                 .findFirst()
@@ -51,11 +65,11 @@ public class CreatingAuthorizationCode extends State {
         authCode.setContent(generatedString);
         authCode.setExpiresAt(Timestamp.valueOf(LocalDateTime.now().plusHours(1)));
         authCode.setRevoked(false);
-        authCode.setClientApp(db.getAppsAccessObject().readById(clientID));
+        authCode.setClientApp(appsAccessService.readById(clientID));
         authCode.setUser(user1);
 
         // zapisuję stworzony obiekt authCode do bazy danych
-        db.getAuthCodesAccessObject().create(authCode);
+        authCodesAccessService.create(authCode);
 
         //zmieniam stan na RedirectingToAppRedirectURL (tam wyślę code do klienta)
         context.changeState(new RedirectingToAppRedirectURL());
@@ -81,10 +95,10 @@ public class CreatingAuthorizationCode extends State {
         }
 
         // biorę wszystkie scopes z database
-        List<Scope> scopesFromDataBase = db.getScopesAccessObject().readAll();
+        List<Scope> scopesFromDataBase = scopesAccessService.readAll();
 
         // biorę wszystkie permissions z database
-        List<Permission> permissionsFromDataBase = db.getPermissionsAccessObject().readAll();
+        List<Permission> permissionsFromDataBase = permissionsAccessService.readAll();
 
         // sprawdzam czy istnieją takie scope co są w scopesSeparated
         for (String scope : scopesSeparated) {
@@ -104,12 +118,12 @@ public class CreatingAuthorizationCode extends State {
 
                 // tworzę obiekt Permission
                 Permission permission = new Permission();
-                permission.setClientApp(db.getAppsAccessObject().readById(clientID));
+                permission.setClientApp(appsAccessService.readById(clientID));
                 permission.setScope(scope1);
                 permission.setUser(user1);
 
                 // zapisuję stworzony obiekt permission do bazy danych
-                db.getPermissionsAccessObject().create(permission);
+                permissionsAccessService.create(permission);
             }
         }
 
