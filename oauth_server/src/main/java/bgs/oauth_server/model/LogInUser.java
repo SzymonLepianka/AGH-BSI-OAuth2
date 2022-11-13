@@ -7,17 +7,29 @@ import bgs.oauth_server.token.*;
 
 import io.jsonwebtoken.*;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.util.*;
 import java.util.stream.*;
 
+@Service("LogInUser")
 public class LogInUser {
 
-    private static String getClientID(String accessToken) {
+    @Autowired
+    private UsersAccessService usersAccessService;
+    @Autowired
+    private ScopesAccessService scopesAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private PermissionsAccessService permissionsAccessService;
+
+    private String getClientID(String accessToken) {
 
         String[] split_string = accessToken.split("\\.");
         String base64EncodedBody = split_string[1];
@@ -33,12 +45,11 @@ public class LogInUser {
         return split[0].substring(12);
     }
 
-    private static Long getUserIDFromToken(String accessToken) throws SQLException {
+    private Long getUserIDFromToken(String accessToken) throws SQLException {
         Long clientIDFromToken = Long.parseLong(getClientID(accessToken));
 
         // czytam z danych danych appSecret clienta z danym clientID
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        Long appSecret = db.getAppsAccessObject().readById(clientIDFromToken).getAppSecret();
+        Long appSecret = appsAccessService.readById(clientIDFromToken).getAppSecret();
 
         //dekoduję z otrzymanego tokenu subject(userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
@@ -48,17 +59,16 @@ public class LogInUser {
     }
 
 
-    public static Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
+    public Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
         var userID = getUserIDFromToken(accessToken);
 
-        IDatabaseEditor dbEditor = DatabaseEditor.getInstance();
-        var users = dbEditor.getUsersAccessObject().readAll();
+        var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getId() == userID).findFirst();
 
         var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
-        var allPermission = dbEditor.getPermissionsAccessObject().readAll();
+        var allPermission = permissionsAccessService.readAll();
         var userPermissionForApp = allPermission.stream()
                 .filter(x -> x.getUser().getId().equals(user.get().getId())
                         && String.valueOf(x.getClientApp().getId()).equals(clientID))
@@ -66,14 +76,14 @@ public class LogInUser {
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {
-            var scopes = dbEditor.getScopesAccessObject().readAll();
-            var clientApp = dbEditor.getAppsAccessObject().readById(Long.parseLong(clientID));
+            var scopes = scopesAccessService.readAll();
+            var clientApp = appsAccessService.readById(Long.parseLong(clientID));
             for (var scope : scopes) {
                 var permission = new Permission();
                 permission.setClientApp(clientApp);
                 permission.setUser(user.get());
                 permission.setScope(scope);
-                dbEditor.getPermissionsAccessObject().create(permission);
+                permissionsAccessService.create(permission);
                 userPermissionForApp.add(permission);
             }
         }
@@ -87,9 +97,8 @@ public class LogInUser {
         return context.handle(params);
     }
 
-    public static Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
-        IDatabaseEditor dbEditor = DatabaseEditor.getInstance();
-        var users = dbEditor.getUsersAccessObject().readAll();
+    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
+        var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
         if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User " + username + " does not exist in the database (LogInUser)");
@@ -100,7 +109,7 @@ public class LogInUser {
         var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
-        var allPermission = dbEditor.getPermissionsAccessObject().readAll();
+        var allPermission = permissionsAccessService.readAll();
         var userPermissionForApp = allPermission.stream()
                 .filter(x -> x.getUser().getId().equals(user.get().getId())
                         && String.valueOf(x.getClientApp().getId()).equals(clientID))
@@ -108,14 +117,14 @@ public class LogInUser {
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {
-            var scopes = dbEditor.getScopesAccessObject().readAll();
-            var clientApp = dbEditor.getAppsAccessObject().readById(Long.parseLong(clientID));
+            var scopes = scopesAccessService.readAll();
+            var clientApp = appsAccessService.readById(Long.parseLong(clientID));
             for (var scope : scopes) {
                 var permission = new Permission();
                 permission.setClientApp(clientApp);
                 permission.setUser(user.get());
                 permission.setScope(scope);
-                dbEditor.getPermissionsAccessObject().create(permission);
+                permissionsAccessService.create(permission);
                 userPermissionForApp.add(permission);
             }
         }

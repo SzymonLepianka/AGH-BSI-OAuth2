@@ -5,18 +5,24 @@ import bgs.oauth_server.domain.*;
 
 import bgs.oauth_server.dao.*;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.util.*;
 
+@Service("RevokeGrantType")
 public class RevokeGrantType {
-    public static boolean revokeGrantType(Long clientID, String authCode) throws SQLException {
+
+    @Autowired
+    private AuthCodesAccessService authCodesAccessService;
+
+    public boolean revokeGrantType(Long clientID, String authCode) throws SQLException {
 
         // pobieram z bazy danych AuthCodes i szukam przekazanego 'authCode'
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        List<AuthCode> codesFromDataBase = db.getAuthCodesAccessObject().readAll();
+        List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
         AuthCode authCodeFound = codesFromDataBase.stream()
                 .filter(c -> authCode.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
                 .findFirst()
@@ -28,7 +34,7 @@ public class RevokeGrantType {
 
         // robię update AuthCode w bazie danych
         authCodeFound.setRevoked(true);
-        db.getAuthCodesAccessObject().update(authCodeFound);
+        authCodesAccessService.update(authCodeFound);
 
         return true;
     }

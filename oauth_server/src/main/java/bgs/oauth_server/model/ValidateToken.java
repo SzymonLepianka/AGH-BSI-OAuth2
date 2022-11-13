@@ -6,22 +6,30 @@ import bgs.oauth_server.token.*;
 
 import io.jsonwebtoken.*;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.time.*;
 import java.util.*;
 
+@Service("ValidateToken")
 public class ValidateToken {
 
-    public static boolean validateToken(String accessToken) throws SQLException {
+
+    @Autowired
+    private AccessTokensAccessService accessTokensAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+
+    public boolean validateToken(String accessToken) throws SQLException {
 
         Long clientID = getClientID(accessToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        Long appSecret = db.getAppsAccessObject().readById(clientID).getAppSecret();
+        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         //dekoduję z otrzymanego tokenu issuedAt, expiration, scopes i subject(userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
@@ -41,24 +49,23 @@ public class ValidateToken {
             return false;
         }
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
-        List<AccessToken> accessTokens = db.getAccessTokensAccessObject().readAll();
+        List<AccessToken> accessTokens = accessTokensAccessService.readAll();
         AccessToken accessTokenFound = accessTokens.stream()
                 .filter(at -> (userID.equals(at.getUser().getId()) && issuedAt.equals(at.getCreatedAt()) || Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) && (expiration.equals(at.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) && clientID.equals(at.getClientApp().getId()) && scopes.equals(at.getScopes()))
                 .findFirst()
                 .orElse(null);
 
         // sprawdzam czy token nie jest revoked
-        if (accessTokenFound != null){
+        if (accessTokenFound != null) {
             {
                 return !accessTokenFound.isRevoked();
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    private static Long getClientID(String accessToken) {
+    private Long getClientID(String accessToken) {
 
         String[] split_string = accessToken.split("\\.");
         String base64EncodedBody = split_string[1];
@@ -68,8 +75,8 @@ public class ValidateToken {
 
         String[] split = body.split(",");
 
-        if (!split[0].startsWith("clientID", 2)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token should have 'clientID' instead of " + split[0].substring(2,10));
+        if (!split[0].startsWith("clientID", 2)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token should have 'clientID' instead of " + split[0].substring(2, 10));
         }
 
 // KODZIK dający expiresAt

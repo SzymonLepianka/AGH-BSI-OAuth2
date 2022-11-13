@@ -5,19 +5,29 @@ import bgs.oauth_server.dao.*;
 import bgs.oauth_server.token.*;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.sql.*;
 import java.time.*;
 import java.util.*;
 
+@Service("RevokeToken")
 public class RevokeToken {
-    public static boolean revokeToken(Long clientID, String accessToken) throws SQLException {
+
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private AccessTokensAccessService accessTokensAccessService;
+    @Autowired
+    private RefreshTokensAccessService refreshTokensAccessService;
+
+    public boolean revokeToken(Long clientID, String accessToken) throws SQLException {
 
         // czytam z bazy danych appSecret clienta z danym clientID
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        Long appSecret = db.getAppsAccessObject().readById(clientID).getAppSecret();
+        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         //dekoduję z otrzymanego tokenu issuedAt, expiration, scopes i subject (czyli userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
@@ -38,7 +48,7 @@ public class RevokeToken {
         }
 
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
-        List<AccessToken> accessTokens = db.getAccessTokensAccessObject().readAll();
+        List<AccessToken> accessTokens = accessTokensAccessService.readAll();
         AccessToken accessTokenFound = accessTokens.stream()
                 .filter(at -> (userID.equals(at.getUser().getId()) &&
                         (issuedAt.equals(at.getCreatedAt()) ||
@@ -55,10 +65,10 @@ public class RevokeToken {
 
         // robię update Access Tokenu  w bazie danych
         accessTokenFound.setRevoked(true);
-        db.getAccessTokensAccessObject().update(accessTokenFound);
+        accessTokensAccessService.update(accessTokenFound);
 
         // pobieram z bazy danych refreshTokens i szukam posiadającego accessTokenID przekazanego w params 'accessToken'
-        List<RefreshToken> refreshTokens = db.getRefreshTokensAccessObject().readAll();
+        List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
         RefreshToken refreshTokenFound = refreshTokens.stream()
                 .filter(rt -> (accessTokenFound.getId().equals(rt.getAccessToken().getId())))
                 .findFirst()
@@ -70,7 +80,7 @@ public class RevokeToken {
 
         // robię update Refresh Tokenu  w bazie danych
         refreshTokenFound.setRevoked(true);
-        db.getRefreshTokensAccessObject().update(refreshTokenFound);
+        refreshTokensAccessService.update(refreshTokenFound);
 
         return true;
     }
