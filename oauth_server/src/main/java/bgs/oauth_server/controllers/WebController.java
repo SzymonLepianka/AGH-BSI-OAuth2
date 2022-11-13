@@ -23,6 +23,13 @@ public class WebController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private LogInUser logInUser;
+    @Autowired
+    private ValidateToken validateToken;
+    @Autowired
+    private Authorization authorization;
+
     private static String getClientID(String accessToken) {
 
         String[] split_string = accessToken.split("\\.");
@@ -43,7 +50,7 @@ public class WebController {
     public String loginFormWithClientID(@RequestParam String clientID, HttpServletResponse httpServletResponse, Model model) {
         model.addAttribute("clientID", clientID);
         try {
-            Authorization.Authorize(httpServletResponse);
+            authorization.Authorize(httpServletResponse);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -54,11 +61,11 @@ public class WebController {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             var accessTokenCookie = WebUtils.getCookie(request, "AccessToken" + clientID);
-            if (accessTokenCookie == null || !ValidateToken.validateToken(accessTokenCookie.getValue())) {
+            if (accessTokenCookie == null || !validateToken.validateToken(accessTokenCookie.getValue())) {
                 var cookies = request.getCookies();
                 for (var cookie : cookies) {
-                    if (cookie.getName().startsWith("AccessToken") && ValidateToken.validateToken(cookie.getValue())) {
-                        var modelResponse = LogInUser.handle(cookie.getValue(), clientID, passwordEncoder);
+                    if (cookie.getName().startsWith("AccessToken") && validateToken.validateToken(cookie.getValue())) {
+                        var modelResponse = logInUser.handle(cookie.getValue(), clientID, passwordEncoder);
                         return WebView.LoginView(modelResponse, httpServletResponse);
                     }
                 }
@@ -77,7 +84,7 @@ public class WebController {
         var clientID = "1";
         model.addAttribute("clientID", clientID);
         try {
-            Authorization.Authorize(httpServletResponse);
+            authorization.Authorize(httpServletResponse);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -91,8 +98,8 @@ public class WebController {
             if (accessTokenCookie == null) {
                 var cookies = request.getCookies();
                 for (var cookie : cookies) {
-                    if (cookie.getName().startsWith("AccessToken") && ValidateToken.validateToken(cookie.getValue())) {
-                        var modelResponse = LogInUser.handle(cookie.getValue(), clientID, passwordEncoder);
+                    if (cookie.getName().startsWith("AccessToken") && validateToken.validateToken(cookie.getValue())) {
+                        var modelResponse = logInUser.handle(cookie.getValue(), clientID, passwordEncoder);
                         System.out.println(modelResponse.content);
                         return WebView.LoginView(modelResponse, httpServletResponse);
                     }
@@ -107,10 +114,10 @@ public class WebController {
         }
     }
 
-    @PostMapping(value = "/login", params ="clientID")
+    @PostMapping(value = "/login", params = "clientID")
     public String handleLogin(@RequestParam String clientID, @RequestParam String username, @RequestParam String password, HttpServletResponse httpServletResponse) {
         try {
-            var modelResponse = LogInUser.handle(username, password, clientID, passwordEncoder);
+            var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
             return WebView.LoginView(modelResponse, httpServletResponse);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -121,7 +128,7 @@ public class WebController {
     @PostMapping("/login")
     public String handleLogin(@RequestParam String username, @RequestParam String password, HttpServletResponse httpServletResponse) {
         try {
-            var modelResponse = LogInUser.handle(username, password, "1", passwordEncoder);
+            var modelResponse = logInUser.handle(username, password, "1", passwordEncoder);
             return WebView.LoginView(modelResponse, httpServletResponse);
         } catch (SQLException throwables) {
             throwables.printStackTrace();

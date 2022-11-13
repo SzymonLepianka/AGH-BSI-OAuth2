@@ -5,6 +5,7 @@ import bgs.oauth_server.model.State.*;
 import bgs.oauth_server.view.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,19 @@ public class APIController {
 
     private final Context context;
     private final APIView view;
+
+    @Autowired
+    private ValidateToken validateToken;
+    @Autowired
+    private RevokeGrantType revokeGrantType;
+    @Autowired
+    private CheckAuthCodeCookie checkAuthCodeCookie;
+    @Autowired
+    private Authorization authorization;
+    @Autowired
+    private RevokeToken revokeToken;
+    @Autowired
+    private GetUserData getUserData;
 
 
     public APIController() {
@@ -50,7 +64,7 @@ public class APIController {
     public @ResponseBody
     String validateToken(@RequestParam String accessToken) throws SQLException {
 
-        boolean response = ValidateToken.validateToken(accessToken);
+        boolean response = validateToken.validateToken(accessToken);
         /* funkcja zwraca false gdy:
             - minął expiration time
             - nie ma tokenu o takich parametrach
@@ -76,7 +90,7 @@ public class APIController {
     String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
         String authCode = "";
         try {
-            authCode = CheckAuthCodeCookie.Check(httpServletResponse);
+            authCode = checkAuthCodeCookie.Check(httpServletResponse);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -90,7 +104,7 @@ public class APIController {
     @GetMapping("/refreshToken")
     public @ResponseBody
     String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws SQLException {
-        Authorization.Authorize(httpServletResponse, clientID);
+        authorization.Authorize(httpServletResponse, clientID);
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("refreshToken", refreshToken);
@@ -105,7 +119,7 @@ public class APIController {
     String revokeToken(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            Authorization.Authorize(httpServletResponse, clientID);
+            authorization.Authorize(httpServletResponse, clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -113,7 +127,7 @@ public class APIController {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot revoke token");
             }
         }
-        boolean response = RevokeToken.revokeToken(Long.parseLong(clientID), accessToken);
+        boolean response = revokeToken.revokeToken(Long.parseLong(clientID), accessToken);
         System.out.println(response);
 
         /* funkcja zwraca true gdy udało się zrobić revoke
@@ -128,7 +142,7 @@ public class APIController {
     String revokeAllTokens(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            Authorization.Authorize(httpServletResponse, clientID);
+            authorization.Authorize(httpServletResponse, clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -144,7 +158,7 @@ public class APIController {
                 if (cookie.getName().startsWith("AccessToken")) {
                     var accessToken = cookie.getValue();
                     var clientIDForAccessToken = getClientID(accessToken);
-                    RevokeToken.revokeToken(Long.parseLong(clientIDForAccessToken), accessToken);
+                    revokeToken.revokeToken(Long.parseLong(clientIDForAccessToken), accessToken);
                 }
             }
         }
@@ -156,7 +170,7 @@ public class APIController {
     String revokeGrantType(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            Authorization.Authorize(httpServletResponse, clientID);
+            authorization.Authorize(httpServletResponse, clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -165,7 +179,7 @@ public class APIController {
             }
         }
 
-        boolean response = RevokeGrantType.revokeGrantType(Long.parseLong(clientID), authCode);
+        boolean response = revokeGrantType.revokeGrantType(Long.parseLong(clientID), authCode);
         System.out.println(response);
 
         /* funkcja zwraca true gdy udało się zrobić revoke
@@ -180,7 +194,7 @@ public class APIController {
     String getUserData(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            Authorization.Authorize(httpServletResponse, clientID);
+            authorization.Authorize(httpServletResponse, clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -192,7 +206,7 @@ public class APIController {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var accessTokenCookie = WebUtils.getCookie(request, "AccessToken" + clientID);
         var accessToken = accessTokenCookie.getValue();
-        JSONObject userData = GetUserData.getUserData(Long.parseLong(clientID), accessToken);
+        JSONObject userData = getUserData.getUserData(Long.parseLong(clientID), accessToken);
         System.out.println(userData);
 
         /* funkcja zwraca JSONObject gdy accessToken jest valid
@@ -209,7 +223,7 @@ public class APIController {
     String getUserData(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            Authorization.Authorize(httpServletResponse, clientID);
+            authorization.Authorize(httpServletResponse, clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -218,7 +232,7 @@ public class APIController {
             }
         }
 
-        JSONObject userData = GetUserData.getUserData(Long.parseLong(clientID), accessToken);
+        JSONObject userData = getUserData.getUserData(Long.parseLong(clientID), accessToken);
         System.out.println(userData);
 
         /* funkcja zwraca JSONObject gdy accessToken jest valid

@@ -22,11 +22,17 @@ public class TestAPIController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UsersAccessService usersAccessService;
+    @Autowired
+    private AppsAccessService appsAccessService;
+    @Autowired
+    private Authorization authorization;
+
     @GetMapping("/users")
     public @ResponseBody String getAllUsers() throws SQLException {
-        IDatabaseEditor dbEditor = DatabaseEditor.getInstance();
         StringBuilder sb = new StringBuilder();
-        List<User> users = dbEditor.getUsersAccessObject().readAll();
+        List<User> users = usersAccessService.readAll();
         for (var user : users) {
             sb.append(user.getFirstName());
         }
@@ -52,16 +58,14 @@ public class TestAPIController {
         newUser.setPhoneNumber(phone_number);
         newUser.setSurname(surname);
         newUser.setUsername(username);
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        db.getUsersAccessObject().create(newUser);
+        usersAccessService.create(newUser);
         return "Stworzono użytkownika";
     }
 
     @GetMapping("/clients")
     public @ResponseBody String getAllApps() throws SQLException {
-        IDatabaseEditor dbEditor = DatabaseEditor.getInstance();
         StringBuilder sb = new StringBuilder();
-        List<ClientApp> clientAppList = dbEditor.getAppsAccessObject().readAll();
+        List<ClientApp> clientAppList = appsAccessService.readAll();
         for (var clientApp : clientAppList) {
             sb.append(clientApp.getRedirectURL());
         }
@@ -71,19 +75,18 @@ public class TestAPIController {
     @GetMapping("/clients/add")
     public @ResponseBody String addClient() throws SQLException {
         ClientApp clientApp = new ClientApp();
-        IDatabaseEditor db = DatabaseEditor.getInstance();
-        User user = db.getUsersAccessObject().readById(2L);
+        User user = usersAccessService.readById(2L);
         clientApp.setUser(user);
         clientApp.setAppSecret(9878654123L);
         clientApp.setRedirectURL("onet.pl/xd");
-        db.getAppsAccessObject().create(clientApp);
+        appsAccessService.create(clientApp);
         return "new application added!";
     }
 
     @GetMapping("/authorizationTest")
-    public  @ResponseBody String authorizationTest(HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String authorizationTest(HttpServletResponse httpServletResponse) throws SQLException {
         try {
-            Authorization.Authorize(httpServletResponse);
+            authorization.Authorize(httpServletResponse);
         } catch (ResponseStatusException exception) {
             if (exception.getStatus() != HttpStatus.UNAUTHORIZED) {
                 exception.printStackTrace();
