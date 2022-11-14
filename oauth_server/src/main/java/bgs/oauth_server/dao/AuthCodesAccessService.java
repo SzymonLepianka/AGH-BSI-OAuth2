@@ -21,13 +21,13 @@ public class AuthCodesAccessService {
 
     private AuthCode createAuthCodeFromResult(ResultSet rs) throws SQLException {
         AuthCode authCode = new AuthCode();
-        authCode.setId(rs.getLong("auth_code_id"));
+        authCode.setAuthCodeId(rs.getInt("auth_code_id"));
         authCode.setExpiresAt(rs.getTimestamp("expires_at"));
         authCode.setContent(rs.getString("content"));
         authCode.setRevoked(rs.getBoolean("revoked"));
-        ClientApp clientApp = appsAccessService.readById(rs.getLong("client_app_id"));
+        ClientApp clientApp = appsAccessService.readById(rs.getInt("client_app_id"));
         authCode.setClientApp(clientApp);
-        User user = usersAccessService.readById(rs.getLong("user_id"));
+        User user = usersAccessService.readById(rs.getInt("user_id"));
         authCode.setUser(user);
         return authCode;
     }
@@ -38,7 +38,7 @@ public class AuthCodesAccessService {
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAuthCodeFromResult(resultSet));
     }
 
-    public AuthCode readById(Long id) throws SQLException {
+    public AuthCode readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("auth_code_id", id);
         final String sql = "SELECT * from auth_codes where auth_code_id=:auth_code_id";
@@ -55,8 +55,8 @@ public class AuthCodesAccessService {
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
         parameters.addValue("content", object.getContent());
-        parameters.addValue("client_app_id", object.getClientApp().getId());
-        parameters.addValue("user_id", object.getUser().getId());
+        parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
+        parameters.addValue("user_id", object.getUser().getUserId());
         final String sql = "INSERT INTO auth_codes (expires_at, revoked, content, client_app_id, user_id) values (:expires_at, :revoked, :content, :client_app_id, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -67,9 +67,9 @@ public class AuthCodesAccessService {
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
         parameters.addValue("content", object.getContent());
-        parameters.addValue("client_app_id", object.getClientApp().getId());
-        parameters.addValue("user_id", object.getUser().getId());
-        parameters.addValue("auth_code_id", object.getId());
+        parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
+        parameters.addValue("user_id", object.getUser().getUserId());
+        parameters.addValue("auth_code_id", object.getAuthCodeId());
         final String sql = "UPDATE auth_codes SET expires_at = :expires_at, revoked = :revoked, content = :content, client_app_id = :client_app_id, user_id = :user_id WHERE auth_code_id = :auth_code_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -77,7 +77,7 @@ public class AuthCodesAccessService {
 
     public void remove(AuthCode object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("auth_code_id", object.getId());
+        parameters.addValue("auth_code_id", object.getAuthCodeId());
         final String sql = "DELETE FROM auth_codes WHERE auth_code_id = :auth_code_id";
         namedJdbcTemplate.update(sql, parameters);
     }

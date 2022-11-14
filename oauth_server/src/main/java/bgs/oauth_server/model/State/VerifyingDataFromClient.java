@@ -40,12 +40,12 @@ public class VerifyingDataFromClient implements State {
 
             // pobieram 'code' i 'clientID' z 'params'
             String code = params.get("code");
-            Long clientID = Long.parseLong(params.get("clientID"));
+            Integer clientID = Integer.parseInt(params.get("clientID"));
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
             List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
             AuthCode authCode = codesFromDataBase.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
+                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
                     .findFirst()
                     .orElse(null);
 
@@ -71,16 +71,16 @@ public class VerifyingDataFromClient implements State {
 
             // pobieram 'refreshToken' i 'clientID' z 'params'
             String refreshToken = params.get("refreshToken");
-            Long clientID = Long.parseLong(params.get("clientID"));
+            Integer clientID = Integer.parseInt(params.get("clientID"));
 
             // czytam z danych danych appSecret clienta z danym clientID
-            Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+            Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
             params.put("appSecret", appSecret.toString());
 
             //dekoduję z otrzymanego tokenu accessTokenID i expiration
             TokenDecoder tokenDecoder = new TokenDecoder();
             Claims claims = tokenDecoder.decodeToken(refreshToken, appSecret.toString());
-            Long accessTokenID = Long.parseLong(claims.get("access_token_id").toString());
+            Integer accessTokenID = Integer.parseInt(claims.get("access_token_id").toString());
             // ustawiam format Timestamp
             String date = String.valueOf(claims.getExpiration().toInstant()).substring(0, 10);
             String time = String.valueOf(claims.getExpiration().toInstant()).substring(11, 19);
@@ -89,7 +89,7 @@ public class VerifyingDataFromClient implements State {
             // pobieram z bazy danych refreshTokens i szukam przekazanego w params 'refreshToken'
             List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
             RefreshToken findRefreshToken = refreshTokens.stream()
-                    .filter(rt -> accessTokenID.equals(rt.getAccessToken().getId()) && (expiration.equals(rt.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(rt.getExpiresAt())) && clientID.equals(rt.getAccessToken().getClientApp().getId()))
+                    .filter(rt -> accessTokenID.equals(rt.getAccessToken().getAccessTokenId()) && (expiration.equals(rt.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(rt.getExpiresAt())) && clientID.equals(rt.getAccessToken().getClientApp().getClientAppId()))
                     .findFirst()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh Token with expiresAt=" + expiration + ", accessTokenID=" + accessTokenID + ", clientID=" + clientID + " does not exists (while VerifyingDataFromClient)"));
 

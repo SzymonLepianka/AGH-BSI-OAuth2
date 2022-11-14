@@ -23,7 +23,7 @@ public class RedirectingToAppRedirectURL implements State {
         System.out.println("RedirectingToAppRedirectURL");
 
         // wyciągam clientID z params
-        Long clientID = Long.parseLong(params.get("clientID"));
+        Integer clientID = Integer.parseInt(params.get("clientID"));
 
         // biorę z bazy danych redirectURL danego klienta
         String redirectURL = appsAccessService.readById(clientID).getRedirectURL();
@@ -37,7 +37,7 @@ public class RedirectingToAppRedirectURL implements State {
             // biorę wszystkie AuthCodes z bazy danych i sprawdzam czy istnieje o takich parametrach jak w params
             List<AuthCode> authCodes = authCodesAccessService.readAll();
             AuthCode authCode = authCodes.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
+                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Code " + code + " does not exists (thrown in RedirectingToAppRedirectURL)"));
 

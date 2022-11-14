@@ -26,16 +26,16 @@ public class ValidateToken {
 
     public boolean validateToken(String accessToken) throws SQLException {
 
-        Long clientID = getClientID(accessToken);
+        Integer clientID = getClientID(accessToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         //dekoduję z otrzymanego tokenu issuedAt, expiration, scopes i subject(userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
         Claims claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
         String scopes = (String) claims.get("scopes");
-        Long userID = Long.parseLong(claims.getSubject());
+        Integer userID = Integer.parseInt(claims.getSubject());
         // ustawiam format Timestamp issuedAt i expiration
         String date = String.valueOf(claims.getIssuedAt().toInstant()).substring(0, 10);
         String time = String.valueOf(claims.getIssuedAt().toInstant()).substring(11, 19);
@@ -51,7 +51,7 @@ public class ValidateToken {
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
         List<AccessToken> accessTokens = accessTokensAccessService.readAll();
         AccessToken accessTokenFound = accessTokens.stream()
-                .filter(at -> (userID.equals(at.getUser().getId()) && issuedAt.equals(at.getCreatedAt()) || Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) && (expiration.equals(at.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) && clientID.equals(at.getClientApp().getId()) && scopes.equals(at.getScopes()))
+                .filter(at -> (userID.equals(at.getUser().getUserId()) && issuedAt.equals(at.getCreatedAt()) || Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) && (expiration.equals(at.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes()))
                 .findFirst()
                 .orElse(null);
 
@@ -65,7 +65,7 @@ public class ValidateToken {
         }
     }
 
-    private Long getClientID(String accessToken) {
+    private Integer getClientID(String accessToken) {
 
         String[] split_string = accessToken.split("\\.");
         String base64EncodedBody = split_string[1];
@@ -89,6 +89,6 @@ public class ValidateToken {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token should have 'exp' instead of " + split[2].substring(1,4));
 //        }
 
-        return Long.parseLong(split[0].substring(12));
+        return Integer.parseInt(split[0].substring(12));
     }
 }

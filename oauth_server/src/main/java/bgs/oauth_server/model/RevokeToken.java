@@ -24,16 +24,16 @@ public class RevokeToken {
     @Autowired
     private RefreshTokensAccessService refreshTokensAccessService;
 
-    public boolean revokeToken(Long clientID, String accessToken) throws SQLException {
+    public boolean revokeToken(Integer clientID, String accessToken) throws SQLException {
 
         // czytam z bazy danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         //dekoduję z otrzymanego tokenu issuedAt, expiration, scopes i subject (czyli userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
         Claims claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
         String scopes = (String) claims.get("scopes");
-        Long userID = Long.parseLong(claims.getSubject());
+        Integer userID = Integer.parseInt(claims.getSubject());
         // ustawiam format Timestamp issuedAt i expiration
         String date = String.valueOf(claims.getIssuedAt().toInstant()).substring(0, 10);
         String time = String.valueOf(claims.getIssuedAt().toInstant()).substring(11, 19);
@@ -50,12 +50,12 @@ public class RevokeToken {
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
         List<AccessToken> accessTokens = accessTokensAccessService.readAll();
         AccessToken accessTokenFound = accessTokens.stream()
-                .filter(at -> (userID.equals(at.getUser().getId()) &&
+                .filter(at -> (userID.equals(at.getUser().getUserId()) &&
                         (issuedAt.equals(at.getCreatedAt()) ||
                                 Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) &&
                         (expiration.equals(at.getExpiresAt()) ||
                                 Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) &&
-                        clientID.equals(at.getClientApp().getId()) && scopes.equals(at.getScopes())))
+                        clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes())))
                 .findFirst()
                 .orElse(null);
 
@@ -70,9 +70,9 @@ public class RevokeToken {
         // pobieram z bazy danych refreshTokens i szukam posiadającego accessTokenID przekazanego w params 'accessToken'
         List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
         RefreshToken refreshTokenFound = refreshTokens.stream()
-                .filter(rt -> (accessTokenFound.getId().equals(rt.getAccessToken().getId())))
+                .filter(rt -> (accessTokenFound.getAccessTokenId().equals(rt.getAccessToken().getAccessTokenId())))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Refresh Token with " + accessTokenFound.getId() + " does not exist (while RevokeToken)"));
+                .orElseThrow(() -> new IllegalStateException("Refresh Token with " + accessTokenFound.getAccessTokenId() + " does not exist (while RevokeToken)"));
 
         if (refreshTokenFound == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh Token associated with the provided token does not exist in data base");

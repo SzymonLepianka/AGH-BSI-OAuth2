@@ -20,10 +20,10 @@ public class RefreshTokensAccessService {
 
     private RefreshToken createRefreshTokenFromResult(ResultSet rs) throws SQLException {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setId(rs.getLong("refresh_token_id"));
+        refreshToken.setRefreshTokenId(rs.getInt("refresh_token_id"));
         refreshToken.setExpiresAt(rs.getTimestamp("expires_at"));
         refreshToken.setRevoked(rs.getBoolean("revoked"));
-        AccessToken accessToken = accessTokensAccessService.readById(rs.getLong("access_token_id"));
+        AccessToken accessToken = accessTokensAccessService.readById(rs.getInt("access_token_id"));
         refreshToken.setAccessToken(accessToken);
         return refreshToken;
     }
@@ -34,7 +34,7 @@ public class RefreshTokensAccessService {
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createRefreshTokenFromResult(resultSet));
     }
 
-    public RefreshToken readById(Long id) throws SQLException {
+    public RefreshToken readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("refresh_token_id", id);
         final String sql = "select * from refresh_tokens where refresh_token_id=:refresh_token_id";
@@ -50,7 +50,7 @@ public class RefreshTokensAccessService {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
-        parameters.addValue("access_token_id", object.getAccessToken().getId());
+        parameters.addValue("access_token_id", object.getAccessToken().getAccessTokenId());
         final String sql = "insert into refresh_tokens (expires_at, revoked, access_token_id) values (:expires_at, :revoked, :access_token_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -60,8 +60,8 @@ public class RefreshTokensAccessService {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
-        parameters.addValue("access_token_id", object.getAccessToken().getId());
-        parameters.addValue("refresh_token_id", object.getId());
+        parameters.addValue("access_token_id", object.getAccessToken().getAccessTokenId());
+        parameters.addValue("refresh_token_id", object.getRefreshTokenId());
         final String sql = "update refresh_tokens set expires_at = :expires_at, revoked = :revoked, access_token_id = :access_token_id where refresh_token_id = :refresh_token_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -69,7 +69,7 @@ public class RefreshTokensAccessService {
 
     public void remove(RefreshToken object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("refresh_token_id", object.getId());
+        parameters.addValue("refresh_token_id", object.getRefreshTokenId());
         final String sql = "DELETE FROM refresh_tokens WHERE refresh_token_id = :refresh_token_id";
         namedJdbcTemplate.update(sql, parameters);
     }

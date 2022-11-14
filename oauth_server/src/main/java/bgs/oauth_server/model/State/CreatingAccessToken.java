@@ -31,28 +31,28 @@ public class CreatingAccessToken implements State {
 
         System.out.println("CreatingAccessToken");
 
-        Long clientID, userID;
+        Integer clientID, userID;
         // przypadek CreatingAuthorizationCode
         if (params.containsKey("code")) {
             //pobieram z params 'code' i 'clientID'
             String code = params.get("code");
-            clientID = Long.parseLong(params.get("clientID"));
+            clientID = Integer.parseInt(params.get("clientID"));
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
             List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
             AuthCode authCode = codesFromDataBase.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
+                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
                     .findFirst()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code " + code + " does not exists (while CreatingAccessToken)"));
 
             //ID użytkownika przypisanego do znalezionego AuthCode
-            userID = authCode.getUser().getId();
+            userID = authCode.getUser().getUserId();
         }
 
         // przypadek RefreshingAccessToken
         else {
-            clientID = Long.parseLong(params.get("clientID"));
-            userID = Long.parseLong(params.get("userID"));
+            clientID = Integer.parseInt(params.get("clientID"));
+            userID = Integer.parseInt(params.get("userID"));
         }
 
         // ustalam createdAt oraz expiresAt (parametry tokenu)
@@ -65,7 +65,7 @@ public class CreatingAccessToken implements State {
         List<Permission> permissionsFromDataBase = permissionsAccessService.readAll();
         StringBuilder scopes = new StringBuilder();
         for (Permission permission : permissionsFromDataBase) {
-            if (permission.getClientApp().getId().equals(clientID) && permission.getUser().getId().equals(userID)) {
+            if (permission.getClientApp().getClientAppId().equals(clientID) && permission.getUser().getUserId().equals(userID)) {
                 String name = permission.getScope().getName();
                 // sprawdzam czy danego scope już nie przypisałem
                 if (!scopes.toString().contains(name)) {
@@ -106,7 +106,7 @@ public class CreatingAccessToken implements State {
         accessTokensAccessService.create(accessToken);
 
         // czytam z danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // czytam z danych username z danym userID
         String username = usersAccessService.readById(userID).getUsername();

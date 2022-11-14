@@ -23,7 +23,7 @@ public class GetUserData {
     @Autowired
     private UsersAccessService usersAccessService;
 
-    public JSONObject getUserData(Long clientID, String accessToken) throws SQLException {
+    public JSONObject getUserData(Integer clientID, String accessToken) throws SQLException {
 
         // tworzę JSONObject (zostanie zwrócony)
         JSONObject userData = new JSONObject();
@@ -34,13 +34,13 @@ public class GetUserData {
         }
 
         // czytam z bazy danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // dekoduję otrzymany token (scopes i userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
         Claims claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
         String scopes = (String) claims.get("scopes");
-        Long userID = Long.parseLong(claims.getSubject());
+        Integer userID = Integer.parseInt(claims.getSubject());
 
         // rozdzielam scopes do tablicy
         String[] scopesSeparated = scopes.split(",");

@@ -2,7 +2,7 @@ CREATE TABLE access_tokens (
     access_token_id serial NOT NULL PRIMARY KEY,
     user_id integer NOT NULL,
     client_app_id integer NOT NULL,
-    scope varchar NULL,
+    scopes varchar NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL,
     expires_at timestamp NULL,

@@ -40,12 +40,12 @@ public class CreatingRefreshToken implements State {
         // odczytuję potrzebne parametry z 'params'
         Timestamp createdAt = Timestamp.valueOf(params.get("createdAt"));
         String scopes = params.get("scopes");
-        Long clientID = Long.parseLong(params.get("clientID"));
+        Integer clientID = Integer.parseInt(params.get("clientID"));
 
         // odczytuję stworzony w CreatingAccessToken accessToken
         List<AccessToken> accessTokenList = accessTokensAccessService.readAll();
         AccessToken accessToken = accessTokenList.stream()
-                .filter(at -> expiresAt.equals(at.getExpiresAt()) && clientID.equals(at.getClientApp().getId()) && scopes.equals(at.getScopes()))
+                .filter(at -> expiresAt.equals(at.getExpiresAt()) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes()))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token with expiresAt=" + expiresAt + " does not exists (while CreatingRefreshToken)"));
 
@@ -57,10 +57,10 @@ public class CreatingRefreshToken implements State {
         refreshTokensAccessService.create(refreshToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientID).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // buduję refreshToken
-        RefreshTokenBuilder refreshTokenBuilder = new RefreshTokenBuilder(refreshToken.getExpiresAt(), refreshToken.getAccessToken().getId(), appSecret);
+        RefreshTokenBuilder refreshTokenBuilder = new RefreshTokenBuilder(refreshToken.getExpiresAt(), refreshToken.getAccessToken().getAccessTokenId(), appSecret);
         String createdRefreshToken = refreshTokenBuilder.generateToken();
         System.out.println("Created Refresh Token: " + createdRefreshToken);
 

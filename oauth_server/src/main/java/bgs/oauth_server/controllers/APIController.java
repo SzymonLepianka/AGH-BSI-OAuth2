@@ -127,7 +127,7 @@ public class APIController {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot revoke token");
             }
         }
-        boolean response = revokeToken.revokeToken(Long.parseLong(clientID), accessToken);
+        boolean response = revokeToken.revokeToken(Integer.parseInt(clientID), accessToken);
         System.out.println(response);
 
         /* funkcja zwraca true gdy udało się zrobić revoke
@@ -158,7 +158,7 @@ public class APIController {
                 if (cookie.getName().startsWith("AccessToken")) {
                     var accessToken = cookie.getValue();
                     var clientIDForAccessToken = getClientID(accessToken);
-                    revokeToken.revokeToken(Long.parseLong(clientIDForAccessToken), accessToken);
+                    revokeToken.revokeToken(Integer.parseInt(clientIDForAccessToken), accessToken);
                 }
             }
         }
@@ -179,7 +179,7 @@ public class APIController {
             }
         }
 
-        boolean response = revokeGrantType.revokeGrantType(Long.parseLong(clientID), authCode);
+        boolean response = revokeGrantType.revokeGrantType(Integer.parseInt(clientID), authCode);
         System.out.println(response);
 
         /* funkcja zwraca true gdy udało się zrobić revoke
@@ -206,7 +206,7 @@ public class APIController {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var accessTokenCookie = WebUtils.getCookie(request, "AccessToken" + clientID);
         var accessToken = accessTokenCookie.getValue();
-        JSONObject userData = getUserData.getUserData(Long.parseLong(clientID), accessToken);
+        JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
         System.out.println(userData);
 
         /* funkcja zwraca JSONObject gdy accessToken jest valid
@@ -232,7 +232,7 @@ public class APIController {
             }
         }
 
-        JSONObject userData = getUserData.getUserData(Long.parseLong(clientID), accessToken);
+        JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
         System.out.println(userData);
 
         /* funkcja zwraca JSONObject gdy accessToken jest valid

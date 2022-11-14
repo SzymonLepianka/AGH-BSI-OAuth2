@@ -19,11 +19,11 @@ public class AppsAccessService {
 
     private ClientApp createClientAppFromResult(ResultSet rs) throws SQLException {
         ClientApp clientApp = new ClientApp();
-        clientApp.setId(rs.getLong("client_app_id"));
-        User user = usersAccessService.readById(rs.getLong("user_id"));
+        clientApp.setClientAppId(rs.getInt("client_app_id"));
+        User user = usersAccessService.readById(rs.getInt("user_id"));
         clientApp.setUser(user);
-        clientApp.setAppSecret(rs.getLong("app_secret"));
-        clientApp.setRedirectURL(rs.getString("redirecturl"));
+        clientApp.setAppSecret(rs.getInt("app_secret"));
+        clientApp.setRedirectURL(rs.getString("redirect_url"));
         clientApp.setAgeRestriction(rs.getBoolean("age_restriction"));
         return clientApp;
     }
@@ -34,7 +34,7 @@ public class AppsAccessService {
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createClientAppFromResult(resultSet));
     }
 
-    public ClientApp readById(Long id) throws SQLException {
+    public ClientApp readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("client_app_id", id);
         final String sql = "select * from client_apps where client_app_id = :client_app_id";
@@ -49,10 +49,10 @@ public class AppsAccessService {
     public ClientApp create(ClientApp object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("app_secret", object.getAppSecret());
-        parameters.addValue("redirecturl", object.getRedirectURL());
+        parameters.addValue("redirect_url", object.getRedirectURL());
         parameters.addValue("age_restriction", object.isAgeRestriction());
-        parameters.addValue("user_id", object.getUser().getId());
-        final String sql = "insert into client_apps (app_secret, redirecturl, age_restriction, user_id) values (:app_secret, :redirecturl, :age_restriction, :user_id)";
+        parameters.addValue("user_id", object.getUser().getUserId());
+        final String sql = "insert into client_apps (app_secret, redirect_url, age_restriction, user_id) values (:app_secret, :redirect_url, :age_restriction, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -60,18 +60,18 @@ public class AppsAccessService {
     public ClientApp update(ClientApp object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("app_secret", object.getAppSecret());
-        parameters.addValue("redirecturl", object.getRedirectURL());
+        parameters.addValue("redirect_url", object.getRedirectURL());
         parameters.addValue("age_restriction", object.isAgeRestriction());
-        parameters.addValue("user_id", object.getUser().getId());
-        parameters.addValue("client_app_id", object.getId());
-        final String sql = "update client_apps set app_secret=:app_secret, redirecturl=:redirecturl, age_restriction=:age_restriction, user_id=:user_id where client_app_id=:client_app_id";
+        parameters.addValue("user_id", object.getUser().getUserId());
+        parameters.addValue("client_app_id", object.getClientAppId());
+        final String sql = "update client_apps set app_secret=:app_secret, redirect_url=:redirect_url, age_restriction=:age_restriction, user_id=:user_id where client_app_id=:client_app_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
 
     public void remove(ClientApp object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("client_app_id", object.getId());
+        parameters.addValue("client_app_id", object.getClientAppId());
         final String sql = "DELETE FROM client_apps WHERE client_app_id = :client_app_id";
         namedJdbcTemplate.update(sql, parameters);
     }

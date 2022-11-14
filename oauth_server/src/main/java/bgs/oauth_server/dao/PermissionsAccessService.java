@@ -24,12 +24,12 @@ public class PermissionsAccessService {
 
     private Permission createPermissionFromResult(ResultSet rs) throws SQLException {
         Permission permission = new Permission();
-        permission.setId(rs.getLong("permission_id"));
-        ClientApp clientApp = appsAccessService.readById(rs.getLong("client_app_id"));
+        permission.setPermissionId(rs.getInt("permission_id"));
+        ClientApp clientApp = appsAccessService.readById(rs.getInt("client_app_id"));
         permission.setClientApp(clientApp);
-        User user = usersAccessService.readById(rs.getLong("user_id"));
+        User user = usersAccessService.readById(rs.getInt("user_id"));
         permission.setUser(user);
-        Scope scope = scopesAccessService.readById(rs.getLong("scope_id"));
+        Scope scope = scopesAccessService.readById(rs.getInt("scope_id"));
         permission.setScope(scope);
         return permission;
     }
@@ -41,7 +41,7 @@ public class PermissionsAccessService {
     }
 
 
-    public Permission readById(Long id) throws SQLException {
+    public Permission readById(Integer id) throws SQLException {
 
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("permission_id", id);
@@ -57,9 +57,9 @@ public class PermissionsAccessService {
 
     public Permission create(Permission object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("client_app_id", object.getClientApp().getId());
-        parameters.addValue("scope_id", object.getScope().getId());
-        parameters.addValue("user_id", object.getUser().getId());
+        parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
+        parameters.addValue("scope_id", object.getScope().getScopeId());
+        parameters.addValue("user_id", object.getUser().getUserId());
         final String sql = "INSERT INTO permissions (client_app_id, scope_id, user_id) values(:client_app_id, :scope_id, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -67,10 +67,10 @@ public class PermissionsAccessService {
 
     public Permission update(Permission object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("client_app_id", object.getClientApp().getId());
-        parameters.addValue("scope_id", object.getScope().getId());
-        parameters.addValue("user_id", object.getUser().getId());
-        parameters.addValue("permission_id", object.getId());
+        parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
+        parameters.addValue("scope_id", object.getScope().getScopeId());
+        parameters.addValue("user_id", object.getUser().getUserId());
+        parameters.addValue("permission_id", object.getPermissionId());
         final String sql = "UPDATE permissions SET client_app_id = :client_app_id, scope_id = :scope_id, user_id = :user_id WHERE permission_id = :permission_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -78,7 +78,7 @@ public class PermissionsAccessService {
 
     public void remove(Permission object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("permission_id", object.getId());
+        parameters.addValue("permission_id", object.getPermissionId());
         final String sql = "DELETE FROM permissions WHERE permission_id = :permission_id";
         namedJdbcTemplate.update(sql, parameters);
     }

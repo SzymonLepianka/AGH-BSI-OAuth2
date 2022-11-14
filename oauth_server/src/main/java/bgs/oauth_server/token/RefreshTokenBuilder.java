@@ -12,10 +12,10 @@ public class RefreshTokenBuilder {
 
     String secretKey;
     Timestamp expiresAt;
-    Long createdAccessTokenID;
+    Integer createdAccessTokenID;
 
 
-    public RefreshTokenBuilder(Timestamp expiresAt, Long createdAccessTokenID, Long appSecret) {
+    public RefreshTokenBuilder(Timestamp expiresAt, Integer createdAccessTokenID, Integer appSecret) {
         this.expiresAt = expiresAt;
         this.secretKey = String.valueOf(appSecret);
         this.createdAccessTokenID = createdAccessTokenID;

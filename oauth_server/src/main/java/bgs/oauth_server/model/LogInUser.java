@@ -45,39 +45,39 @@ public class LogInUser {
         return split[0].substring(12);
     }
 
-    private Long getUserIDFromToken(String accessToken) throws SQLException {
-        Long clientIDFromToken = Long.parseLong(getClientID(accessToken));
+    private Integer getUserIDFromToken(String accessToken) throws SQLException {
+        Integer clientIDFromToken = Integer.parseInt(getClientID(accessToken));
 
         // czytam z danych danych appSecret clienta z danym clientID
-        Long appSecret = appsAccessService.readById(clientIDFromToken).getAppSecret();
+        Integer appSecret = appsAccessService.readById(clientIDFromToken).getAppSecret();
 
         //dekoduję z otrzymanego tokenu subject(userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
         Claims claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
-        Long userID = Long.parseLong(claims.getSubject());
+        Integer userID = Integer.parseInt(claims.getSubject());
         return userID;
     }
 
 
     public Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
-        var userID = getUserIDFromToken(accessToken);
+        Integer userID = getUserIDFromToken(accessToken);
 
         var users = usersAccessService.readAll();
-        var user = users.stream().filter(x -> x.getId() == userID).findFirst();
+        var user = users.stream().filter(x -> x.getUserId() == userID).findFirst();
 
         var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
-        var userPermissionForApp = allPermission.stream()
-                .filter(x -> x.getUser().getId().equals(user.get().getId())
-                        && String.valueOf(x.getClientApp().getId()).equals(clientID))
+        List<Permission> userPermissionForApp = allPermission.stream()
+                .filter(x -> x.getUser().getUserId().equals(user.get().getUserId())
+                        && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID))
                 .collect(Collectors.toList());
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {
             var scopes = scopesAccessService.readAll();
-            var clientApp = appsAccessService.readById(Long.parseLong(clientID));
+            var clientApp = appsAccessService.readById(Integer.parseInt(clientID));
             for (var scope : scopes) {
                 var permission = new Permission();
                 permission.setClientApp(clientApp);
@@ -93,7 +93,7 @@ public class LogInUser {
         }
         scopesBuilder.delete(scopesBuilder.length() - 1, scopesBuilder.length());
         params.put("scopes", scopesBuilder.toString());
-        params.put("userID", String.valueOf(user.get().getId()));
+        params.put("userID", String.valueOf(user.get().getUserId()));
         return context.handle(params);
     }
 
@@ -111,14 +111,14 @@ public class LogInUser {
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
         var userPermissionForApp = allPermission.stream()
-                .filter(x -> x.getUser().getId().equals(user.get().getId())
-                        && String.valueOf(x.getClientApp().getId()).equals(clientID))
+                .filter(x -> x.getUser().getUserId().equals(user.get().getUserId())
+                        && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID))
                 .collect(Collectors.toList());
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {
             var scopes = scopesAccessService.readAll();
-            var clientApp = appsAccessService.readById(Long.parseLong(clientID));
+            var clientApp = appsAccessService.readById(Integer.parseInt(clientID));
             for (var scope : scopes) {
                 var permission = new Permission();
                 permission.setClientApp(clientApp);
@@ -134,7 +134,7 @@ public class LogInUser {
         }
         scopesBuilder.delete(scopesBuilder.length() - 1, scopesBuilder.length());
         params.put("scopes", scopesBuilder.toString());
-        params.put("userID", String.valueOf(user.get().getId()));
+        params.put("userID", String.valueOf(user.get().getUserId()));
         return context.handle(params);
     }
 }

@@ -14,11 +14,11 @@ public class AccessTokenBuilder {
     Timestamp createdAt;
     Timestamp expiresAt;
     String scopes;
-    Long clientID;
+    Integer clientID;
     String userID;
     String username;
 
-    public AccessTokenBuilder(Timestamp createdAt, Timestamp expiresAt, String scopes, Long clientID, Long userID, String username, Long appSecret) {
+    public AccessTokenBuilder(Timestamp createdAt, Timestamp expiresAt, String scopes, Integer clientID, Integer userID, String username, Integer appSecret) {
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
         this.scopes = scopes;

@@ -17,7 +17,7 @@ public class ScopesAccessService {
 
     private Scope createScopeFromResult(ResultSet rs) throws SQLException {
         Scope scope = new Scope();
-        scope.setId(rs.getLong("scope_id"));
+        scope.setScopeId(rs.getInt("scope_id"));
         scope.setName(rs.getString("name"));
         return scope;
     }
@@ -28,7 +28,7 @@ public class ScopesAccessService {
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createScopeFromResult(resultSet));
     }
 
-    public Scope readById(Long id) throws SQLException {
+    public Scope readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("scope_id", id);
         final String sql = "SELECT * FROM scopes WHERE scope_id = :scope_id";
@@ -51,7 +51,7 @@ public class ScopesAccessService {
     public Scope update(Scope object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("name", object.getName());
-        parameters.addValue("scope_id", object.getId());
+        parameters.addValue("scope_id", object.getScopeId());
         final String sql = "UPDATE scopes SET name = :name WHERE scope_id = :scope_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
@@ -59,7 +59,7 @@ public class ScopesAccessService {
 
     public void remove(Scope object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("scope_id", object.getId());
+        parameters.addValue("scope_id", object.getScopeId());
         final String sql = "DELETE FROM scopes WHERE scope_id = :scope_id";
         namedJdbcTemplate.update(sql, parameters);
     }

@@ -23,16 +23,16 @@ public class RefreshingAccessToken implements State {
 
         // pobieram 'refreshToken' i 'clientID' z 'params'
         String refreshToken = params.get("refreshToken");
-        long clientID = Long.parseLong(params.get("clientID"));
-        long appSecret = Long.parseLong(params.get("appSecret"));
+        Integer clientID = Integer.parseInt(params.get("clientID"));
+        Integer appSecret = Integer.parseInt(params.get("appSecret"));
 
         //dekoduję z otrzymanego tokenu accessTokenID
         TokenDecoder tokenDecoder = new TokenDecoder();
-        Claims claims = tokenDecoder.decodeToken(refreshToken, Long.toString(appSecret));
-        Long accessTokenID = Long.parseLong(claims.get("access_token_id").toString());
+        Claims claims = tokenDecoder.decodeToken(refreshToken, Integer.toString(appSecret));
+        Integer accessTokenID = Integer.parseInt(claims.get("access_token_id").toString());
 
         // pobieram z bazy danych userID i dodaję do params
-        Long userID = accessTokensAccessService.readById(accessTokenID).getUser().getId();
+        Integer userID = accessTokensAccessService.readById(accessTokenID).getUser().getUserId();
         params.put("userID", userID.toString());
 
         // usuwam były accessToken

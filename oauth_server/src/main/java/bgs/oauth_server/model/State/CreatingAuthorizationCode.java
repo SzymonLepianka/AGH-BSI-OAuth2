@@ -37,10 +37,10 @@ public class CreatingAuthorizationCode implements State {
 
         System.out.println("CreatingAuthorizationCode");
 
-        Long clientID = Long.parseLong(params.get("clientID"));
+        Integer clientID = Integer.parseInt(params.get("clientID"));
 
         // pobieram z bazy obiekt User dla danego 'username'
-        var user = usersAccessService.readById(Long.parseLong(params.get("userID")));
+        var user = usersAccessService.readById(Integer.parseInt(params.get("userID")));
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -109,7 +109,7 @@ public class CreatingAuthorizationCode implements State {
 
             // szukam czy permission z danymi parametrami już istnieje
             Permission permissionFound = permissionsFromDataBase.stream()
-                    .filter(p -> scope1.getId().equals(p.getScope().getId()) && clientID.equals(p.getClientApp().getId()) && user1.getId().equals(p.getUser().getId()))
+                    .filter(p -> scope1.getScopeId().equals(p.getScope().getScopeId()) && clientID.equals(p.getClientApp().getClientAppId()) && user1.getUserId().equals(p.getUser().getUserId()))
                     .findFirst()
                     .orElse(null);
 

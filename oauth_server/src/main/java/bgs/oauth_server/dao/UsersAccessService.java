@@ -17,7 +17,7 @@ public class UsersAccessService {
 
     private User createUserFromResult(ResultSet rs) throws SQLException {
         User user = new User();
-        user.setId(rs.getLong("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setPassword(rs.getString("password"));
         user.setEmail(rs.getString("email"));
         user.setBirthDate(rs.getDate("birth_date"));
@@ -35,7 +35,7 @@ public class UsersAccessService {
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createUserFromResult(resultSet));
     }
 
-    public User readById(Long id) throws SQLException {
+    public User readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", id);
         final String sql = "select * from users where user_id=:user_id";
@@ -64,7 +64,7 @@ public class UsersAccessService {
 
     public User update(User object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("user_id", object.getId());
+        parameters.addValue("user_id", object.getUserId());
         parameters.addValue("birth_date", object.getBirthDate());
         parameters.addValue("email", object.getEmail());
         parameters.addValue("first_name", object.getFirstName());
@@ -80,7 +80,7 @@ public class UsersAccessService {
 
     public void remove(User object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("user_id", object.getId());
+        parameters.addValue("user_id", object.getUserId());
         final String sql = "DELETE FROM users WHERE user_id = :user_id";
         namedJdbcTemplate.update(sql, parameters);
     }

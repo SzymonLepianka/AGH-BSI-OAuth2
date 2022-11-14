@@ -75,9 +75,9 @@ public class TestAPIController {
     @GetMapping("/clients/add")
     public @ResponseBody String addClient() throws SQLException {
         ClientApp clientApp = new ClientApp();
-        User user = usersAccessService.readById(2L);
+        User user = usersAccessService.readById(2);
         clientApp.setUser(user);
-        clientApp.setAppSecret(9878654123L);
+        clientApp.setAppSecret(987865412);
         clientApp.setRedirectURL("onet.pl/xd");
         appsAccessService.create(clientApp);
         return "new application added!";

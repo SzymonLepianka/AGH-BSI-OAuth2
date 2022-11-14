@@ -19,12 +19,12 @@ public class RevokeGrantType {
     @Autowired
     private AuthCodesAccessService authCodesAccessService;
 
-    public boolean revokeGrantType(Long clientID, String authCode) throws SQLException {
+    public boolean revokeGrantType(Integer clientID, String authCode) throws SQLException {
 
         // pobieram z bazy danych AuthCodes i szukam przekazanego 'authCode'
         List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
         AuthCode authCodeFound = codesFromDataBase.stream()
-                .filter(c -> authCode.equals(c.getContent()) && clientID.equals(c.getClientApp().getId()))
+                .filter(c -> authCode.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
                 .findFirst()
                 .orElse(null);
 

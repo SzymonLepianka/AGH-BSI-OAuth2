@@ -6,7 +6,7 @@ public class AccessToken {
     private Integer accessTokenId;
     private User user;
     private ClientApp clientApp;
-    private String scope;
+    private String scopes;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp expiresAt;
@@ -36,12 +36,12 @@ public class AccessToken {
         this.clientApp = clientApp;
     }
 
-    public String getScope() {
-        return scope;
+    public String getScopes() {
+        return scopes;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setScopes(String scopes) {
+        this.scopes = scopes;
     }
 
     public Timestamp getCreatedAt() {
