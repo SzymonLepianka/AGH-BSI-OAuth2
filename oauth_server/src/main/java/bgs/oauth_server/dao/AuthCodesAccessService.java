@@ -34,14 +34,14 @@ public class AuthCodesAccessService {
 
     public List<AuthCode> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "select * FROM auth_codes";
+        final String sql = "select * FROM oauth.auth_codes";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAuthCodeFromResult(resultSet));
     }
 
     public AuthCode readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("auth_code_id", id);
-        final String sql = "SELECT * from auth_codes where auth_code_id=:auth_code_id";
+        final String sql = "SELECT * from oauth.auth_codes where auth_code_id=:auth_code_id";
         List<AuthCode> result = namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAuthCodeFromResult(resultSet));
         if (!result.isEmpty()) {
             return result.get(0);
@@ -57,7 +57,7 @@ public class AuthCodesAccessService {
         parameters.addValue("content", object.getContent());
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("user_id", object.getUser().getUserId());
-        final String sql = "INSERT INTO auth_codes (expires_at, revoked, content, client_app_id, user_id) values (:expires_at, :revoked, :content, :client_app_id, :user_id)";
+        final String sql = "INSERT INTO oauth.auth_codes (expires_at, revoked, content, client_app_id, user_id) values (:expires_at, :revoked, :content, :client_app_id, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -70,7 +70,7 @@ public class AuthCodesAccessService {
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("user_id", object.getUser().getUserId());
         parameters.addValue("auth_code_id", object.getAuthCodeId());
-        final String sql = "UPDATE auth_codes SET expires_at = :expires_at, revoked = :revoked, content = :content, client_app_id = :client_app_id, user_id = :user_id WHERE auth_code_id = :auth_code_id";
+        final String sql = "UPDATE oauth.auth_codes SET expires_at = :expires_at, revoked = :revoked, content = :content, client_app_id = :client_app_id, user_id = :user_id WHERE auth_code_id = :auth_code_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -78,7 +78,7 @@ public class AuthCodesAccessService {
     public void remove(AuthCode object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("auth_code_id", object.getAuthCodeId());
-        final String sql = "DELETE FROM auth_codes WHERE auth_code_id = :auth_code_id";
+        final String sql = "DELETE FROM oauth.auth_codes WHERE auth_code_id = :auth_code_id";
         namedJdbcTemplate.update(sql, parameters);
     }
 }

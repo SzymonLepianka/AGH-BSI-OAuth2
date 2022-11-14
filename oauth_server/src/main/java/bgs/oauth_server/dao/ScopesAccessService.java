@@ -24,14 +24,14 @@ public class ScopesAccessService {
 
     public List<Scope> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "SELECT * FROM scopes";
+        final String sql = "SELECT * FROM oauth.scopes";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createScopeFromResult(resultSet));
     }
 
     public Scope readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("scope_id", id);
-        final String sql = "SELECT * FROM scopes WHERE scope_id = :scope_id";
+        final String sql = "SELECT * FROM oauth.scopes WHERE scope_id = :scope_id";
         List<Scope> result = namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createScopeFromResult(resultSet));
         if (!result.isEmpty()) {
             return result.get(0);
@@ -43,7 +43,7 @@ public class ScopesAccessService {
     public Scope create(Scope object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("name", object.getName());
-        final String sql = "INSERT INTO scopes (name) values (:name)";
+        final String sql = "INSERT INTO oauth.scopes (name) values (:name)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -52,7 +52,7 @@ public class ScopesAccessService {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("name", object.getName());
         parameters.addValue("scope_id", object.getScopeId());
-        final String sql = "UPDATE scopes SET name = :name WHERE scope_id = :scope_id";
+        final String sql = "UPDATE oauth.scopes SET name = :name WHERE scope_id = :scope_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -60,7 +60,7 @@ public class ScopesAccessService {
     public void remove(Scope object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("scope_id", object.getScopeId());
-        final String sql = "DELETE FROM scopes WHERE scope_id = :scope_id";
+        final String sql = "DELETE FROM oauth.scopes WHERE scope_id = :scope_id";
         namedJdbcTemplate.update(sql, parameters);
     }
 }

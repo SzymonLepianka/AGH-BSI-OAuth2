@@ -36,14 +36,14 @@ public class AccessTokensAccessService {
 
     public List<AccessToken> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "select * from access_tokens";
+        final String sql = "select * from oauth.access_tokens";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAccessTokenFromResult(resultSet));
     }
 
     public AccessToken readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("access_token_id", id);
-        final String sql = "select * from access_tokens where access_token_id=:access_token_id";
+        final String sql = "select * from oauth.access_tokens where access_token_id=:access_token_id";
         List<AccessToken> result = namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAccessTokenFromResult(resultSet));
         if (!result.isEmpty()) {
             return result.get(0);
@@ -61,7 +61,7 @@ public class AccessTokensAccessService {
         parameters.addValue("updated_at", object.getUpdatedAt());
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("user_id", object.getUser().getUserId());
-        final String sql = "insert into access_tokens (created_at, expires_at, revoked, scope, updated_at, client_app_id, user_id) values (:created_at, :expires_at, :revoked, :scope, :updated_at, :client_app_id, :user_id)";
+        final String sql = "insert into oauth.access_tokens (created_at, expires_at, revoked, scope, updated_at, client_app_id, user_id) values (:created_at, :expires_at, :revoked, :scope, :updated_at, :client_app_id, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -76,7 +76,7 @@ public class AccessTokensAccessService {
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("user_id", object.getUser().getUserId());
         parameters.addValue("access_token_id", object.getAccessTokenId());
-        final String sql = "update access_tokens set created_at = :created_at, expires_at = :expires_at, revoked = :revoked, scope = :scope, updated_at = :updated_at, client_app_id = :client_app_id, user_id = :user_id where access_token_id = :access_token_id";
+        final String sql = "update oauth.access_tokens set created_at = :created_at, expires_at = :expires_at, revoked = :revoked, scope = :scope, updated_at = :updated_at, client_app_id = :client_app_id, user_id = :user_id where access_token_id = :access_token_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -84,7 +84,7 @@ public class AccessTokensAccessService {
     public void remove(AccessToken object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("access_token_id", object.getAccessTokenId());
-        final String sql = "DELETE FROM access_tokens WHERE access_token_id = :access_token_id";
+        final String sql = "DELETE FROM oauth.access_tokens WHERE access_token_id = :access_token_id";
         namedJdbcTemplate.update(sql, parameters);
     }
 }

@@ -36,7 +36,7 @@ public class PermissionsAccessService {
 
     public List<Permission> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "SELECT * FROM permissions";
+        final String sql = "SELECT * FROM oauth.permissions";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createPermissionFromResult(resultSet));
     }
 
@@ -45,7 +45,7 @@ public class PermissionsAccessService {
 
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("permission_id", id);
-        final String sql = "SELECT * FROM permissions WHERE permission_id=:permission_id";
+        final String sql = "SELECT * FROM oauth.permissions WHERE permission_id=:permission_id";
         List<Permission> result = namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createPermissionFromResult(resultSet));
         if (!result.isEmpty()) {
             return result.get(0);
@@ -60,7 +60,7 @@ public class PermissionsAccessService {
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("scope_id", object.getScope().getScopeId());
         parameters.addValue("user_id", object.getUser().getUserId());
-        final String sql = "INSERT INTO permissions (client_app_id, scope_id, user_id) values(:client_app_id, :scope_id, :user_id)";
+        final String sql = "INSERT INTO oauth.permissions (client_app_id, scope_id, user_id) values(:client_app_id, :scope_id, :user_id)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -71,7 +71,7 @@ public class PermissionsAccessService {
         parameters.addValue("scope_id", object.getScope().getScopeId());
         parameters.addValue("user_id", object.getUser().getUserId());
         parameters.addValue("permission_id", object.getPermissionId());
-        final String sql = "UPDATE permissions SET client_app_id = :client_app_id, scope_id = :scope_id, user_id = :user_id WHERE permission_id = :permission_id";
+        final String sql = "UPDATE oauth.permissions SET client_app_id = :client_app_id, scope_id = :scope_id, user_id = :user_id WHERE permission_id = :permission_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -79,7 +79,7 @@ public class PermissionsAccessService {
     public void remove(Permission object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("permission_id", object.getPermissionId());
-        final String sql = "DELETE FROM permissions WHERE permission_id = :permission_id";
+        final String sql = "DELETE FROM oauth.permissions WHERE permission_id = :permission_id";
         namedJdbcTemplate.update(sql, parameters);
     }
 }

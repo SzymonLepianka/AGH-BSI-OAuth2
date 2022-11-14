@@ -31,14 +31,14 @@ public class UsersAccessService {
 
     public List<User> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "select * from users";
+        final String sql = "select * from oauth.users";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createUserFromResult(resultSet));
     }
 
     public User readById(Integer id) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", id);
-        final String sql = "select * from users where user_id=:user_id";
+        final String sql = "select * from oauth.users where user_id=:user_id";
         List<User> result = namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createUserFromResult(resultSet));
         if (!result.isEmpty()) {
             return result.get(0);
@@ -57,7 +57,7 @@ public class UsersAccessService {
         parameters.addValue("phone_number", object.getPhoneNumber());
         parameters.addValue("surname", object.getSurname());
         parameters.addValue("username", object.getUsername());
-        final String sql = "insert into users (birth_date, email, first_name, is_developer, password, phone_number, surname, username) values (:birth_date, :email, :first_name, :is_developer, :password, :phone_number, :surname, :username)";
+        final String sql = "insert into oauth.users (birth_date, email, first_name, is_developer, password, phone_number, surname, username) values (:birth_date, :email, :first_name, :is_developer, :password, :phone_number, :surname, :username)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -73,7 +73,7 @@ public class UsersAccessService {
         parameters.addValue("phone_number", object.getPhoneNumber());
         parameters.addValue("surname", object.getSurname());
         parameters.addValue("username", object.getUsername());
-        final String sql = "update users set birth_date = :birth_date, email = :email, first_name = :first_name, is_developer = :is_developer, password = :password, phone_number = :phone_number, surname = :surname, username = :username where user_id = :user_id";
+        final String sql = "update oauth.users set birth_date = :birth_date, email = :email, first_name = :first_name, is_developer = :is_developer, password = :password, phone_number = :phone_number, surname = :surname, username = :username where user_id = :user_id";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
@@ -81,7 +81,7 @@ public class UsersAccessService {
     public void remove(User object) throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", object.getUserId());
-        final String sql = "DELETE FROM users WHERE user_id = :user_id";
+        final String sql = "DELETE FROM oauth.users WHERE user_id = :user_id";
         namedJdbcTemplate.update(sql, parameters);
     }
 }
