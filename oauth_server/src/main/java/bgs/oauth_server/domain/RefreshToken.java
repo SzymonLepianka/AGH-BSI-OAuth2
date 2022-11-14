@@ -1,31 +1,29 @@
 package bgs.oauth_server.domain;
 
-import javax.persistence.*;
 import java.sql.*;
 
-@Entity
-@Table(name="RefreshTokens")
 public class RefreshToken {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, name = "refreshToken_id")
-    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "accessToken_id")
+    private Integer refreshTokenId;
     private AccessToken accessToken;
-
     private boolean revoked;
-
     private Timestamp expiresAt;
 
-    public Long getId() {
-        return id;
+    public Integer getRefreshTokenId() {
+        return refreshTokenId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setRefreshTokenId(Integer refreshTokenId) {
+        this.refreshTokenId = refreshTokenId;
+    }
+
+    public AccessToken getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
     }
 
     public boolean isRevoked() {
@@ -42,13 +40,5 @@ public class RefreshToken {
 
     public void setExpiresAt(Timestamp expiresAt) {
         this.expiresAt = expiresAt;
-    }
-
-    public AccessToken getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(AccessToken accessToken) {
-        this.accessToken = accessToken;
     }
 }

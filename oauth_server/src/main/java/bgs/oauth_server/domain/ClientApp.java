@@ -1,41 +1,19 @@
 package bgs.oauth_server.domain;
 
-import javax.persistence.*;
-import java.util.*;
-
-@Entity
-@Table(name = "ClientApps")
 public class ClientApp {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(unique = true, name = "clientApp_id")
-    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    private Integer clientAppId;
     private User user;
-
-    @OneToMany(mappedBy = "clientApp", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<AuthCode> authCodes;
-
-    @OneToMany(mappedBy = "clientApp", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Permission> permissions;
-
-    @OneToMany(mappedBy = "clientApp", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<AccessToken> accessTokens;
-
-    private Long appSecret;
-
+    private Integer appSecret;
     private String redirectURL;
-
     private boolean ageRestriction;
 
-    public Long getId() {
-        return id;
+    public Integer getClientAppId() {
+        return clientAppId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setClientAppId(Integer clientAppId) {
+        this.clientAppId = clientAppId;
     }
 
     public User getUser() {
@@ -46,11 +24,11 @@ public class ClientApp {
         this.user = user;
     }
 
-    public Long getAppSecret() {
+    public Integer getAppSecret() {
         return appSecret;
     }
 
-    public void setAppSecret(Long appSecret) {
+    public void setAppSecret(Integer appSecret) {
         this.appSecret = appSecret;
     }
 
@@ -68,29 +46,5 @@ public class ClientApp {
 
     public void setAgeRestriction(boolean ageRestriction) {
         this.ageRestriction = ageRestriction;
-    }
-
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    public Set<AuthCode> getAuthCodes() {
-        return authCodes;
-    }
-
-    public void setAuthCodes(Set<AuthCode> authCodes) {
-        this.authCodes = authCodes;
-    }
-
-    public Set<AccessToken> getAccessTokens() {
-        return accessTokens;
-    }
-
-    public void setAccessTokens(Set<AccessToken> accessTokens) {
-        this.accessTokens = accessTokens;
     }
 }

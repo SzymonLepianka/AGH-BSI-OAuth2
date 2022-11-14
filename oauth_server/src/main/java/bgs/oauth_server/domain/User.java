@@ -1,25 +1,11 @@
 package bgs.oauth_server.domain;
 
-//import com.sun.istack.*;
-
-import javax.persistence.*;
 import java.sql.Date;
-import java.util.*;
 
-@Entity
-@Table(name = "Users")
 public class User {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(unique = true, name = "user_id")
-    private Long id;
-//    @NotNull
-    @Column(unique = true)
+    private Integer userId;
     private String username;
-//    @NotNull
     private String password;
-//    @NotNull
-    @Column(unique = true)
     private String email;
     private String firstName;
     private String surname;
@@ -27,40 +13,28 @@ public class User {
     private String phoneNumber;
     private Boolean isDeveloper;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ClientApp> clientApps;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<AccessToken> accessTokens;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Permission> permissions;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<AuthCode> authCodes;
-
-    public Long getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(Long ID) {
-        this.id = ID;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String name) {
-        this.username = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String Password) {
-        this.password = Password;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -75,24 +49,24 @@ public class User {
         return firstName;
     }
 
-    public void setFirstName(String FirstName) {
-        this.firstName = FirstName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getSurname() {
         return surname;
     }
 
-    public void setSurname(String Surname) {
-        this.surname = Surname;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date BirthDate) {
-        this.birthDate = BirthDate;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getPhoneNumber() {
@@ -109,37 +83,5 @@ public class User {
 
     public void setDeveloper(Boolean developer) {
         isDeveloper = developer;
-    }
-
-    public Set<ClientApp> getClientApps() {
-        return clientApps;
-    }
-
-    public void setClientApps(Set<ClientApp> clientApps) {
-        this.clientApps = clientApps;
-    }
-
-    public Set<AccessToken> getAccessTokens() {
-        return accessTokens;
-    }
-
-    public void setAccessTokens(Set<AccessToken> accessTokens) {
-        this.accessTokens = accessTokens;
-    }
-
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    public Set<AuthCode> getAuthCodes() {
-        return authCodes;
-    }
-
-    public void setAuthCodes(Set<AuthCode> authCodes) {
-        this.authCodes = authCodes;
     }
 }

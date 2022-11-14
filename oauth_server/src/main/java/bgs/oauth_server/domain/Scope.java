@@ -1,28 +1,16 @@
 package bgs.oauth_server.domain;
 
-import javax.persistence.*;
-import java.util.*;
-
-@Entity
-@Table(name = "Scopes")
 public class Scope {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(unique = true, name = "scope_id")
-    private Long id;
 
-    @Column(unique = true)
+    private Integer scopeId;
     private String name;
 
-    @OneToMany(mappedBy = "scope", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Permission> permissions;
-
-    public Long getId() {
-        return id;
+    public Integer getScopeId() {
+        return scopeId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setScopeId(Integer scopeId) {
+        this.scopeId = scopeId;
     }
 
     public String getName() {

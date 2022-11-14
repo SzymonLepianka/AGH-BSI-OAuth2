@@ -1,52 +1,47 @@
 package bgs.oauth_server.domain;
 
-import javax.persistence.*;
 import java.sql.*;
-import java.util.*;
 
-@Entity
-@Table(name="AccessTokens")
 public class AccessToken {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, name = "accessToken_id")
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    private Integer accessTokenId;
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "clientApp_id", nullable = false)
     private ClientApp clientApp;
-
-    @OneToMany(mappedBy = "accessToken", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<RefreshToken> refreshTokens;
-
-    private String scopes;
-
+    private String scope;
     private Timestamp createdAt;
-
     private Timestamp updatedAt;
-
     private Timestamp expiresAt;
-
     private boolean revoked;
 
-    public Long getId() {
-        return id;
+    public Integer getAccessTokenId() {
+        return accessTokenId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAccessTokenId(Integer accessTokenId) {
+        this.accessTokenId = accessTokenId;
     }
 
-    public String getScopes() {
-        return scopes;
+    public User getUser() {
+        return user;
     }
 
-    public void setScopes(String scopes) {
-        this.scopes = scopes;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ClientApp getClientApp() {
+        return clientApp;
+    }
+
+    public void setClientApp(ClientApp clientApp) {
+        this.clientApp = clientApp;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public Timestamp getCreatedAt() {
@@ -79,29 +74,5 @@ public class AccessToken {
 
     public void setRevoked(boolean revoked) {
         this.revoked = revoked;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public ClientApp getClientApp() {
-        return clientApp;
-    }
-
-    public void setClientApp(ClientApp clientApp) {
-        this.clientApp = clientApp;
-    }
-
-    public Set<RefreshToken> getRefreshTokens() {
-        return refreshTokens;
-    }
-
-    public void setRefreshTokens(Set<RefreshToken> refreshTokens) {
-        this.refreshTokens = refreshTokens;
     }
 }

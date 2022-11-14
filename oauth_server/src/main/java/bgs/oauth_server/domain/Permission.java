@@ -1,33 +1,18 @@
 package bgs.oauth_server.domain;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "Permissions")
 public class Permission {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(unique = true, name = "permission_id")
-    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    private Integer permissionId;
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "clientApp_id", nullable = false)
     private ClientApp clientApp;
-
-    @ManyToOne
-    @JoinColumn(name = "scope_id", nullable = false)
     private Scope scope;
 
-    public Long getId() {
-        return id;
+    public Integer getPermissionId() {
+        return permissionId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPermissionId(Integer permissionId) {
+        this.permissionId = permissionId;
     }
 
     public User getUser() {
