@@ -28,6 +28,8 @@ public class LogInUser {
     private AppsAccessService appsAccessService;
     @Autowired
     private PermissionsAccessService permissionsAccessService;
+    @Autowired
+    private AuthenticatingClient authenticatingClient;
 
     private String getClientID(String accessToken) {
 
@@ -59,13 +61,13 @@ public class LogInUser {
     }
 
 
-    public Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
+    public Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws Exception {
         Integer userID = getUserIDFromToken(accessToken);
 
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUserId() == userID).findFirst();
 
-        var context = new Context();
+//        var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
@@ -94,10 +96,10 @@ public class LogInUser {
         scopesBuilder.delete(scopesBuilder.length() - 1, scopesBuilder.length());
         params.put("scopes", scopesBuilder.toString());
         params.put("userID", String.valueOf(user.get().getUserId()));
-        return context.handle(params);
+        return authenticatingClient.handle(params);
     }
 
-    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) throws SQLException {
+    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) throws Exception {
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
         if (user.isEmpty()) {
@@ -106,7 +108,7 @@ public class LogInUser {
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is incorrect (LogInUser)");
         }
-        var context = new Context();
+//        var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
@@ -135,6 +137,6 @@ public class LogInUser {
         scopesBuilder.delete(scopesBuilder.length() - 1, scopesBuilder.length());
         params.put("scopes", scopesBuilder.toString());
         params.put("userID", String.valueOf(user.get().getUserId()));
-        return context.handle(params);
+        return authenticatingClient.handle(params);
     }
 }

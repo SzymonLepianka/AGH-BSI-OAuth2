@@ -22,9 +22,11 @@ public class CreatingRefreshToken implements State {
     private RefreshTokensAccessService refreshTokensAccessService;
     @Autowired
     private AppsAccessService appsAccessService;
+    @Autowired
+    private RedirectingToAppRedirectURL redirectingToAppRedirectURL;
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("CreatingRefreshToken");
 
@@ -68,8 +70,8 @@ public class CreatingRefreshToken implements State {
         params.put("createdRefreshToken", createdRefreshToken);
 
         // zmieniam stan na RedirectingToAppRedirectURL
-        context.changeState(new RedirectingToAppRedirectURL());
-        return context.handle(params);
+//        context.changeState(new RedirectingToAppRedirectURL());
+        return redirectingToAppRedirectURL.handle(params);
     }
 
     @Override

@@ -4,7 +4,6 @@ package bgs.oauth_server.model.State;
 import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
-
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -24,16 +23,24 @@ public class VerifyingDataFromClient implements State {
     private AppsAccessService appsAccessService;
     @Autowired
     private RefreshTokensAccessService refreshTokensAccessService;
-
+    @Autowired
+    private CreatingAuthorizationCode creatingAuthorizationCode;
+    @Autowired
+    private ExchangingAuthorizationCodeForAccessToken exchangingAuthorizationCodeForAccessToken;
+    @Autowired
+    private RefreshingAccessToken refreshingAccessToken;
+    @Autowired
+    private Failure failure;
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws Exception {
+        String nextState;
 
         System.out.println("VerifyingDataFromClient");
 
         // jeśli params zawierają "scopes" wtedy CreatingAuthorizationCode
         if (params.containsKey("scopes") && params.containsKey("userID")) {
-            context.changeState(new CreatingAuthorizationCode());
+            nextState = "CreatingAuthorizationCode";
 
             // jeśli params zawierają "code" wtedy ExchangingAuthorizationCodeForAccessToken
         } else if (params.containsKey("code")) {
@@ -44,15 +51,13 @@ public class VerifyingDataFromClient implements State {
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
             List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
-            AuthCode authCode = codesFromDataBase.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
-                    .findFirst()
-                    .orElse(null);
+            AuthCode authCode = codesFromDataBase.stream().filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId())).findFirst().orElse(null);
 
             // jeśli udało się znaleźć AuthCode zmianiam stan na ExchangingAuthorizationCodeForAccessToken
             // w przyciwnym wypadku wyrzucam wyjątek
             if (authCode != null) {
-                context.changeState(new ExchangingAuthorizationCodeForAccessToken());
+                nextState = "ExchangingAuthorizationCodeForAccessToken";
+
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Auth Code does not exist in data base");
             }
@@ -88,10 +93,7 @@ public class VerifyingDataFromClient implements State {
 
             // pobieram z bazy danych refreshTokens i szukam przekazanego w params 'refreshToken'
             List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
-            RefreshToken findRefreshToken = refreshTokens.stream()
-                    .filter(rt -> accessTokenID.equals(rt.getAccessToken().getAccessTokenId()) && (expiration.equals(rt.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(rt.getExpiresAt())) && clientID.equals(rt.getAccessToken().getClientApp().getClientAppId()))
-                    .findFirst()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh Token with expiresAt=" + expiration + ", accessTokenID=" + accessTokenID + ", clientID=" + clientID + " does not exists (while VerifyingDataFromClient)"));
+            RefreshToken findRefreshToken = refreshTokens.stream().filter(rt -> accessTokenID.equals(rt.getAccessToken().getAccessTokenId()) && (expiration.equals(rt.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(rt.getExpiresAt())) && clientID.equals(rt.getAccessToken().getClientApp().getClientAppId())).findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh Token with expiresAt=" + expiration + ", accessTokenID=" + accessTokenID + ", clientID=" + clientID + " does not exists (while VerifyingDataFromClient)"));
 
             // sprawdzam czy refreshToken nie jest przeterminowany
             if (!findRefreshToken.getExpiresAt().after(Timestamp.valueOf(LocalDateTime.now()))) {
@@ -106,15 +108,19 @@ public class VerifyingDataFromClient implements State {
             // usuwam były refreshtoken
             refreshTokensAccessService.remove(findRefreshToken);
 
-            context.changeState(new RefreshingAccessToken());
+            nextState = "RefreshingAccessToken";
 
             // jeśli żadne parametry w params nie pasuje wtedy -> Failure
         } else {
-            context.changeState(new Failure());
+            nextState = "Failure";
         }
 
         // wywołuję CreatingAuthorizationCode / ExchangingAuthorizationCodeForAccessToken / RefreshingAccessToken w przypadku gdy powodzenia / Failure w przeciwym przypadku
-        return context.handle(params);
+        if (nextState.equals("CreatingAuthorizationCode")) return creatingAuthorizationCode.handle(params);
+        if (nextState.equals("ExchangingAuthorizationCodeForAccessToken"))
+            return exchangingAuthorizationCodeForAccessToken.handle(params);
+        if (nextState.equals("RefreshingAccessToken")) return refreshingAccessToken.handle(params);
+        return failure.handle(params);
     }
 
     @Override

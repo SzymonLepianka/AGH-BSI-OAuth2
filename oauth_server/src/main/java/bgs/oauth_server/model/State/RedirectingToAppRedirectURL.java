@@ -15,10 +15,12 @@ public class RedirectingToAppRedirectURL implements State {
     private AppsAccessService appsAccessService;
     @Autowired
     private AuthCodesAccessService authCodesAccessService;
+    @Autowired
+    private Failure failure;
 
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("RedirectingToAppRedirectURL");
 
@@ -60,8 +62,8 @@ public class RedirectingToAppRedirectURL implements State {
         }
 
         // gdy nic się nie dopasowało zmienam stan na failure
-        context.changeState(new Failure());
-        return context.handle(params);
+//        context.changeState(new Failure());
+        return failure.handle(params);
     }
 
     @Override

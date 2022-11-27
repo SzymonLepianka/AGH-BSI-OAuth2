@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 public interface State {
-    Response handle(Context context, Map<String, String> params) throws SQLException;
+    Response handle(Map<String, String> params) throws Exception;
 
     String toString();
 }

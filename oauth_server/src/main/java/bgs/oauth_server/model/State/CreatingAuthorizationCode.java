@@ -30,10 +30,12 @@ public class CreatingAuthorizationCode implements State {
     private ScopesAccessService scopesAccessService;
     @Autowired
     private PermissionsAccessService permissionsAccessService;
+    @Autowired
+    private RedirectingToAppRedirectURL redirectingToAppRedirectURL;
 
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("CreatingAuthorizationCode");
 
@@ -72,7 +74,7 @@ public class CreatingAuthorizationCode implements State {
         authCodesAccessService.create(authCode);
 
         //zmieniam stan na RedirectingToAppRedirectURL (tam wyślę code do klienta)
-        context.changeState(new RedirectingToAppRedirectURL());
+//        context.changeState(new RedirectingToAppRedirectURL());
 
         ///////////////////////
         //PERMISSIONS i SCOPE//
@@ -130,7 +132,7 @@ public class CreatingAuthorizationCode implements State {
         // dopisuję 'code' (content) do params
         params.put("code", authCode.getContent());
 
-        return context.handle(params);
+        return redirectingToAppRedirectURL.handle(params);
     }
 
     @Override

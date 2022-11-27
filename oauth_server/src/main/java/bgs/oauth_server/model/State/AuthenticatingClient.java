@@ -14,6 +14,8 @@ public class AuthenticatingClient implements State {
 
     @Autowired
     private AppsAccessService appsAccessService;
+    @Autowired
+    private VerifyingDataFromClient verifyingDataFromClient;
 
 //    Singleton
 //    private static AuthenticatingClient instance = new AuthenticatingClient();
@@ -31,18 +33,18 @@ public class AuthenticatingClient implements State {
 //    }
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws Exception {
 
         System.out.println("AuthenticatingClient");
 
         // sprawdzam czy klient o danych clientId w params istnieje w bazie danych
         if (appsAccessService.readById((Integer.parseInt(params.get("clientID")))) != null) {
-            context.changeState(new VerifyingDataFromClient());
+//            context.changeState(new VerifyingDataFromClient());
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client with clientID=" + params.get("clientID") + " does not exist");
         }
         // wywołuję VerifyingDataFromClient w przypadku powodzenia
-        return context.handle(params);
+        return verifyingDataFromClient.handle(params);
     }
 
     @Override

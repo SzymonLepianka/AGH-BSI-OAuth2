@@ -25,9 +25,11 @@ public class CreatingAccessToken implements State {
     private UsersAccessService usersAccessService;
     @Autowired
     private AccessTokensAccessService accessTokensAccessService;
+    @Autowired
+    private CreatingRefreshToken creatingRefreshToken;
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("CreatingAccessToken");
 
@@ -123,8 +125,8 @@ public class CreatingAccessToken implements State {
         params.put("createdAccessToken", createdAccessToken);
 
         // zmieniam stan na CreatingRefreshToken
-        context.changeState(new CreatingRefreshToken());
-        return context.handle(params);
+//        context.changeState(new CreatingRefreshToken());
+        return creatingRefreshToken.handle(params);
     }
 
     @Override

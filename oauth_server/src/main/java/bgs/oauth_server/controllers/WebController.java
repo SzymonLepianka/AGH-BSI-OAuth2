@@ -73,7 +73,7 @@ public class WebController {
                 return "AlreadyLogged";
             }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -108,7 +108,7 @@ public class WebController {
                 return "AlreadyLogged";
             }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -119,7 +119,7 @@ public class WebController {
         try {
             var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
             return WebView.LoginView(modelResponse, httpServletResponse);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -130,7 +130,7 @@ public class WebController {
         try {
             var modelResponse = logInUser.handle(username, password, "1", passwordEncoder);
             return WebView.LoginView(modelResponse, httpServletResponse);
-        } catch (SQLException throwables) {
+        } catch (Exception throwables) {
             throwables.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

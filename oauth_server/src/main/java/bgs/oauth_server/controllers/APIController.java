@@ -22,7 +22,6 @@ import java.util.*;
 @RequestMapping("/api")
 public class APIController {
 
-    private final Context context;
     private final APIView view;
 
     @Autowired
@@ -37,10 +36,11 @@ public class APIController {
     private RevokeToken revokeToken;
     @Autowired
     private GetUserData getUserData;
+    @Autowired
+    private AuthenticatingClient authenticatingClient;
 
 
     public APIController() {
-        this.context = new Context();
         this.view = new APIView();
     }
 
@@ -74,12 +74,12 @@ public class APIController {
 
     @GetMapping(value = "/createToken", params = "authCode")
     public @ResponseBody
-    String createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws SQLException {
+    String createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("code", authCode);
-        context.changeState(new AuthenticatingClient());
-        Response response = context.handle(params);
+//        context.changeState(new AuthenticatingClient());
+        Response response = authenticatingClient.handle(params);
         // response.content to obiekt AuthCode
         view.createToken(response, httpServletResponse, clientID);
         return "Token was created successfully";
@@ -87,7 +87,7 @@ public class APIController {
 
     @GetMapping("/createToken")
     public @ResponseBody
-    String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
+    String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws Exception {
         String authCode = "";
         try {
             authCode = checkAuthCodeCookie.Check(httpServletResponse);
@@ -103,13 +103,13 @@ public class APIController {
 
     @GetMapping("/refreshToken")
     public @ResponseBody
-    String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws SQLException {
+    String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws Exception {
         authorization.Authorize(httpServletResponse, clientID);
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("refreshToken", refreshToken);
-        context.changeState(new AuthenticatingClient());
-        Response response = context.handle(params);
+//        context.changeState(new AuthenticatingClient());
+        Response response = authenticatingClient.handle(params);
         view.refreshToken(response, httpServletResponse, clientID);
         return "Token was refreshed successfully";
     }

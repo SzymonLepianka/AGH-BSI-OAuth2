@@ -14,9 +14,11 @@ public class RefreshingAccessToken implements State {
 
     @Autowired
     private AccessTokensAccessService accessTokensAccessService;
+    @Autowired
+    private CreatingAccessToken creatingAccessToken;
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("RefreshingAccessToken");
 
@@ -38,8 +40,8 @@ public class RefreshingAccessToken implements State {
         accessTokensAccessService.remove(accessTokensAccessService.readById(accessTokenID));
 
         // zmieniam stan na CreatingAccessToken
-        context.changeState(new CreatingAccessToken());
-        return context.handle(params);
+//        context.changeState(new CreatingAccessToken());
+        return creatingAccessToken.handle(params);
     }
 
     @Override

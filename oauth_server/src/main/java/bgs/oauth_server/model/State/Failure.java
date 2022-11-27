@@ -11,7 +11,7 @@ import java.util.*;
 public class Failure implements State {
 
     @Override
-    public Response handle(Context context, Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) throws SQLException {
 
         System.out.println("Failure");
 
