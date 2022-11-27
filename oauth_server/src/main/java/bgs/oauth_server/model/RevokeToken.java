@@ -1,7 +1,7 @@
 package bgs.oauth_server.model;
 
 import bgs.oauth_server.domain.*;
-import bgs.oauth_server.dao.*;
+import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.token.*;
 
 import io.jsonwebtoken.*;

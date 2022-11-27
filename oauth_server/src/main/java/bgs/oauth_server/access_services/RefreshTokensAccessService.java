@@ -1,4 +1,4 @@
-package bgs.oauth_server.dao;
+package bgs.oauth_server.access_services;
 
 import bgs.oauth_server.domain.*;
 import org.springframework.beans.factory.annotation.*;

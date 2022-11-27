@@ -1,6 +1,6 @@
 package bgs.oauth_server.model.State;
 
-import bgs.oauth_server.dao.*;
+import bgs.oauth_server.access_services.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;

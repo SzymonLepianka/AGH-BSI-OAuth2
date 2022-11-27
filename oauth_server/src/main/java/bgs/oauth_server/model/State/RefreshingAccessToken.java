@@ -1,10 +1,9 @@
 package bgs.oauth_server.model.State;
 
-import bgs.oauth_server.dao.*;
+import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.token.*;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 
 import java.sql.*;
