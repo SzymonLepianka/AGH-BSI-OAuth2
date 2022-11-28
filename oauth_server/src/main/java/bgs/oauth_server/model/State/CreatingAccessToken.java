@@ -42,10 +42,7 @@ public class CreatingAccessToken implements State {
 
             // pobieram z bazy danych AuthCodes i szukam przekazanego w params 'code'
             List<AuthCode> codesFromDataBase = authCodesAccessService.readAll();
-            AuthCode authCode = codesFromDataBase.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
-                    .findFirst()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code " + code + " does not exists (while CreatingAccessToken)"));
+            AuthCode authCode = codesFromDataBase.stream().filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId())).findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code " + code + " does not exists (while CreatingAccessToken)"));
 
             //ID użytkownika przypisanego do znalezionego AuthCode
             userID = authCode.getUser().getUserId();

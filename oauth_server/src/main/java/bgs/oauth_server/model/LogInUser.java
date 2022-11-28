@@ -4,7 +4,6 @@ import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.model.State.*;
 import bgs.oauth_server.token.*;
-
 import io.jsonwebtoken.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.*;

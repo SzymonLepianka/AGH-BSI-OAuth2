@@ -3,7 +3,6 @@ package bgs.oauth_server.view;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.model.State.*;
 
-
 import javax.servlet.http.*;
 
 public class WebView {

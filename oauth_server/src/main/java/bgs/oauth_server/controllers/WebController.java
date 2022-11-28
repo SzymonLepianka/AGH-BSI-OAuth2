@@ -50,7 +50,7 @@ public class WebController {
     public String loginFormWithClientID(@RequestParam String clientID, HttpServletResponse httpServletResponse, Model model) {
         model.addAttribute("clientID", clientID);
         try {
-            authorization.Authorize(httpServletResponse);
+            authorization.authorize();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -84,7 +84,7 @@ public class WebController {
         var clientID = "1";
         model.addAttribute("clientID", clientID);
         try {
-            authorization.Authorize(httpServletResponse);
+            authorization.authorize();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {

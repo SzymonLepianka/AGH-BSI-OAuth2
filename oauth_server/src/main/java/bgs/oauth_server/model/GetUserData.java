@@ -2,7 +2,6 @@ package bgs.oauth_server.model;
 
 import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.token.*;
-
 import io.jsonwebtoken.*;
 import org.json.*;
 import org.springframework.beans.factory.annotation.*;

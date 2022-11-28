@@ -1,11 +1,8 @@
 package bgs.oauth_server.model.State;
 
 import bgs.oauth_server.access_services.*;
-
-import bgs.oauth_server.domain.*;
-
 import bgs.oauth_server.domain.Permission;
-
+import bgs.oauth_server.domain.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;

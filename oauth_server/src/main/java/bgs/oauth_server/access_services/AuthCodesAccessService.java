@@ -34,7 +34,8 @@ public class AuthCodesAccessService {
 
     public List<AuthCode> readAll() throws SQLException {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "select * FROM oauth.auth_codes";
+        final String sql = "select * FROM oauth." +
+                "auth_codes";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAuthCodeFromResult(resultSet));
     }
 

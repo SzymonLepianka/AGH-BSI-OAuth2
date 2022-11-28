@@ -1,13 +1,11 @@
 package bgs.oauth_server.controllers;
 
 import bgs.oauth_server.domain.*;
-import bgs.oauth_server.model.*;
 import bgs.oauth_server.model.State.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
 import java.util.*;
 
 @Controller

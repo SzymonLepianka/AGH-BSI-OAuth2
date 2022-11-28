@@ -28,23 +28,16 @@ public class AccessTokenBuilder {
         this.username = username;
     }
 
-    @Override
-    public String toString() {
-        return "TokenBuilder{" +
-                "secretKey='" + secretKey + '\'' +
-                ", createdAt=" + createdAt +
-                ", expiresAt=" + expiresAt +
-                ", scopes='" + scopes + '\'' +
-                ", clientID=" + clientID +
-                ", userID='" + userID + '\'' +
-                '}';
-    }
-
     private static Map<String, Object> createHead() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("typ", "JWT");
         map.put("alg", "HS256");
         return map;
+    }
+
+    @Override
+    public String toString() {
+        return "TokenBuilder{" + "secretKey='" + secretKey + '\'' + ", createdAt=" + createdAt + ", expiresAt=" + expiresAt + ", scopes='" + scopes + '\'' + ", clientID=" + clientID + ", userID='" + userID + '\'' + '}';
     }
 
     public String generateToken() {
@@ -57,15 +50,7 @@ public class AccessTokenBuilder {
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         //Let's set the JWT Claims
-        JwtBuilder builder = Jwts.builder()
-                .setHeader(createHead())
-                .claim("clientID", clientID)
-                .setIssuedAt(createdAt)
-                .setExpiration(expiresAt)
-                .claim("scopes", scopes)
-                .setSubject(userID)
-                .claim("username", username)
-                .signWith(SignatureAlgorithm.HS256, signingKey);
+        JwtBuilder builder = Jwts.builder().setHeader(createHead()).claim("clientID", clientID).setIssuedAt(createdAt).setExpiration(expiresAt).claim("scopes", scopes).setSubject(userID).claim("username", username).signWith(SignatureAlgorithm.HS256, signingKey);
 
         //Builds the JWT and serializes it to a compact, URL-safe string
         return builder.compact();

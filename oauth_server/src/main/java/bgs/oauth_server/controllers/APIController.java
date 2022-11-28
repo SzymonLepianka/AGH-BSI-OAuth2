@@ -61,8 +61,7 @@ public class APIController {
     }
 
     @GetMapping("/validateToken")
-    public @ResponseBody
-    String validateToken(@RequestParam String accessToken) throws SQLException {
+    public @ResponseBody String validateToken(@RequestParam String accessToken) throws SQLException {
 
         boolean response = validateToken.validateToken(accessToken);
         /* funkcja zwraca false gdy:
@@ -73,8 +72,7 @@ public class APIController {
     }
 
     @GetMapping(value = "/createToken", params = "authCode")
-    public @ResponseBody
-    String createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws Exception {
+    public @ResponseBody String createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("code", authCode);
@@ -86,11 +84,10 @@ public class APIController {
     }
 
     @GetMapping("/createToken")
-    public @ResponseBody
-    String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws Exception {
+    public @ResponseBody String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws Exception {
         String authCode = "";
         try {
-            authCode = checkAuthCodeCookie.Check(httpServletResponse);
+            authCode = checkAuthCodeCookie.check();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -102,9 +99,8 @@ public class APIController {
     }
 
     @GetMapping("/refreshToken")
-    public @ResponseBody
-    String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws Exception {
-        authorization.Authorize(httpServletResponse, clientID);
+    public @ResponseBody String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws Exception {
+        authorization.authorize(clientID);
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("refreshToken", refreshToken);
@@ -115,11 +111,10 @@ public class APIController {
     }
 
     @GetMapping("/revokeToken")
-    public @ResponseBody
-    String revokeToken(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String revokeToken(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.Authorize(httpServletResponse, clientID);
+            authorization.authorize(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -138,11 +133,10 @@ public class APIController {
     }
 
     @GetMapping("/revokeAllTokens")
-    public @ResponseBody
-    String revokeAllTokens(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String revokeAllTokens(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.Authorize(httpServletResponse, clientID);
+            authorization.authorize(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -166,11 +160,10 @@ public class APIController {
     }
 
     @GetMapping("/revokeGrantType")
-    public @ResponseBody
-    String revokeGrantType(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String revokeGrantType(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.Authorize(httpServletResponse, clientID);
+            authorization.authorize(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -190,11 +183,10 @@ public class APIController {
     }
 
     @GetMapping("/getUserData")
-    public @ResponseBody
-    String getUserData(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String getUserData(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.Authorize(httpServletResponse, clientID);
+            authorization.authorize(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -219,11 +211,10 @@ public class APIController {
     }
 
     @GetMapping(value = "/getUserData", params = "accessToken")
-    public @ResponseBody
-    String getUserData(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String getUserData(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.Authorize(httpServletResponse, clientID);
+            authorization.authorize(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {

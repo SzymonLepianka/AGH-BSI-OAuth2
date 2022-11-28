@@ -21,20 +21,16 @@ public class RefreshTokenBuilder {
         this.createdAccessTokenID = createdAccessTokenID;
     }
 
-    @Override
-    public String toString() {
-        return "RefreshTokenBuilder{" +
-                "secretKey='" + secretKey + '\'' +
-                ", expiresAt=" + expiresAt +
-                ", createdAccessTokenID=" + createdAccessTokenID +
-                '}';
-    }
-
     private static Map<String, Object> createHead() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("typ", "JWT");
         map.put("alg", "HS256");
         return map;
+    }
+
+    @Override
+    public String toString() {
+        return "RefreshTokenBuilder{" + "secretKey='" + secretKey + '\'' + ", expiresAt=" + expiresAt + ", createdAccessTokenID=" + createdAccessTokenID + '}';
     }
 
     public String generateToken() {
@@ -47,11 +43,7 @@ public class RefreshTokenBuilder {
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         //Let's set the JWT Claims
-        JwtBuilder builder = Jwts.builder()
-                .setHeader(createHead())
-                .setExpiration(expiresAt)
-                .claim("access_token_id", createdAccessTokenID)
-                .signWith(SignatureAlgorithm.HS256, signingKey);
+        JwtBuilder builder = Jwts.builder().setHeader(createHead()).setExpiration(expiresAt).claim("access_token_id", createdAccessTokenID).signWith(SignatureAlgorithm.HS256, signingKey);
 
         //Builds the JWT and serializes it to a compact, URL-safe string
         return builder.compact();

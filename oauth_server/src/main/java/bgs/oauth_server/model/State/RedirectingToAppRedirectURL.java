@@ -38,10 +38,7 @@ public class RedirectingToAppRedirectURL implements State {
 
             // biorę wszystkie AuthCodes z bazy danych i sprawdzam czy istnieje o takich parametrach jak w params
             List<AuthCode> authCodes = authCodesAccessService.readAll();
-            AuthCode authCode = authCodes.stream()
-                    .filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Code " + code + " does not exists (thrown in RedirectingToAppRedirectURL)"));
+            AuthCode authCode = authCodes.stream().filter(c -> code.equals(c.getContent()) && clientID.equals(c.getClientApp().getClientAppId())).findFirst().orElseThrow(() -> new IllegalStateException("Code " + code + " does not exists (thrown in RedirectingToAppRedirectURL)"));
 
             // zwracam obiekt Response z pobranym redirectURL i pobranym obiektem authCode
             return new Response(redirectURL, authCode);

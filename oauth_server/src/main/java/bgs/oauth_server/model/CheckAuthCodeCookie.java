@@ -12,7 +12,7 @@ import java.sql.*;
 @Service("CheckAuthCodeCookie")
 public class CheckAuthCodeCookie {
 
-    public String Check(HttpServletResponse httpServletResponse) throws ResponseStatusException, SQLException {
+    public String check() throws ResponseStatusException, SQLException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var authCodeCookie = WebUtils.getCookie(request, "AuthCode");
         if (authCodeCookie == null) {

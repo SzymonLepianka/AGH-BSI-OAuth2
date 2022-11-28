@@ -4,7 +4,6 @@ package bgs.oauth_server.model.State;
 import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
-
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;

@@ -10,7 +10,6 @@ import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.*;
 
-import javax.servlet.http.*;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
@@ -40,14 +39,7 @@ public class TestAPIController {
     }
 
     @GetMapping("/users/add")
-    public @ResponseBody String addUser(@RequestParam String birth_date,
-                                        @RequestParam String email,
-                                        @RequestParam String first_name,
-                                        @RequestParam Boolean is_developer,
-                                        @RequestParam String password,
-                                        @RequestParam String phone_number,
-                                        @RequestParam String surname,
-                                        @RequestParam String username) throws SQLException {
+    public @ResponseBody String addUser(@RequestParam String birth_date, @RequestParam String email, @RequestParam String first_name, @RequestParam Boolean is_developer, @RequestParam String password, @RequestParam String phone_number, @RequestParam String surname, @RequestParam String username) throws SQLException {
         User newUser = new User();
         var birth_dateSQL = Date.valueOf(birth_date);
         newUser.setBirthDate(birth_dateSQL);
@@ -84,9 +76,9 @@ public class TestAPIController {
     }
 
     @GetMapping("/authorizationTest")
-    public @ResponseBody String authorizationTest(HttpServletResponse httpServletResponse) throws SQLException {
+    public @ResponseBody String authorizationTest() throws SQLException {
         try {
-            authorization.Authorize(httpServletResponse);
+            authorization.authorize();
         } catch (ResponseStatusException exception) {
             if (exception.getStatus() != HttpStatus.UNAUTHORIZED) {
                 exception.printStackTrace();

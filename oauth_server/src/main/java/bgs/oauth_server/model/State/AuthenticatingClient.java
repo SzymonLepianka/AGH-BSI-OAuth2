@@ -6,7 +6,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
-import java.sql.*;
 import java.util.*;
 
 @Service("AuthenticatingClient")

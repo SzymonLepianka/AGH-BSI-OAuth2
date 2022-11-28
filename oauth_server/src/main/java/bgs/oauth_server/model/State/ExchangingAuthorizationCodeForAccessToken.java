@@ -11,6 +11,7 @@ public class ExchangingAuthorizationCodeForAccessToken implements State {
 
     @Autowired
     private CreatingAccessToken creatingAccessToken;
+
     @Override
     public Response handle(Map<String, String> params) throws SQLException {
 
