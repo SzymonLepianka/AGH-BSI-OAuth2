@@ -99,7 +99,9 @@ public class CreatingAccessToken implements State {
         // tworzę obiekt accessToken - zapisuję do niego parametry i zapisuję do bazy danych
         AccessToken accessToken = new AccessToken();
         accessToken.setClientApp(appsAccessService.readById(clientID));
+        createdAt.setNanos(0);
         accessToken.setCreatedAt(createdAt);
+        expiresAt.setNanos(0);
         accessToken.setExpiresAt(expiresAt);
         accessToken.setRevoked(false);
         accessToken.setScopes(scopes.toString());

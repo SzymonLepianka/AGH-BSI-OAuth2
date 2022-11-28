@@ -31,13 +31,9 @@ public class CreatingRefreshToken implements State {
         System.out.println("CreatingRefreshToken");
 
         // odczytuję expiresAt z params
-        // pozbywam się z nanosekund, trzeba było zaokrąglić
-        Timestamp expiresAtTemp = Timestamp.valueOf(params.get("expiresAt"));
-        if (expiresAtTemp.getNanos() >= 500000000) {
-            expiresAtTemp = Timestamp.valueOf(expiresAtTemp.toLocalDateTime().plusSeconds(1));
-        }
-        expiresAtTemp.setNanos(0);
-        Timestamp expiresAt = expiresAtTemp;
+        // pozbywam się z nanosekund
+        Timestamp expiresAt = Timestamp.valueOf(params.get("expiresAt"));
+        expiresAt.setNanos(0);
 
         // odczytuję potrzebne parametry z 'params'
         Timestamp createdAt = Timestamp.valueOf(params.get("createdAt"));
@@ -54,7 +50,9 @@ public class CreatingRefreshToken implements State {
         // tworzę obiekt refreshToken - zapisuję do niego parametry i zapisuję do bazy danych
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setAccessToken(accessToken);
-        refreshToken.setExpiresAt(Timestamp.valueOf(createdAt.toLocalDateTime().plusDays(1)));
+        Timestamp refreshTokenExpiresAt = Timestamp.valueOf(createdAt.toLocalDateTime().plusDays(1));
+        refreshTokenExpiresAt.setNanos(0);
+        refreshToken.setExpiresAt(refreshTokenExpiresAt);
         refreshToken.setRevoked(false);
         refreshTokensAccessService.create(refreshToken);
 

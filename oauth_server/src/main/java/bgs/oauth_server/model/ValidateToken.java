@@ -3,7 +3,6 @@ package bgs.oauth_server.model;
 import bgs.oauth_server.access_services.*;
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.token.*;
-
 import io.jsonwebtoken.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.*;
@@ -51,7 +50,14 @@ public class ValidateToken {
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
         List<AccessToken> accessTokens = accessTokensAccessService.readAll();
         AccessToken accessTokenFound = accessTokens.stream()
-                .filter(at -> (userID.equals(at.getUser().getUserId()) && issuedAt.equals(at.getCreatedAt()) || Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) && (expiration.equals(at.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes()))
+                .filter(at -> (
+                        userID.equals(at.getUser().getUserId()) &&
+                                issuedAt.equals(at.getCreatedAt()) ||
+                                Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) &&
+                        (expiration.equals(at.getExpiresAt()) ||
+                                Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) &&
+                        clientID.equals(at.getClientApp().getClientAppId()) &&
+                        scopes.equals(at.getScopes()))
                 .findFirst()
                 .orElse(null);
 
