@@ -41,8 +41,8 @@ public class TestAPIController {
     @GetMapping("/users/add")
     public @ResponseBody String addUser(@RequestParam String birth_date, @RequestParam String email, @RequestParam String first_name, @RequestParam Boolean is_developer, @RequestParam String password, @RequestParam String phone_number, @RequestParam String surname, @RequestParam String username) throws SQLException {
         User newUser = new User();
-        var birth_dateSQL = Date.valueOf(birth_date);
-        newUser.setBirthDate(birth_dateSQL);
+        Date birthDateSQL = Date.valueOf(birth_date);
+        newUser.setBirthDate(birthDateSQL);
         newUser.setEmail(email);
         newUser.setFirstName(first_name);
         newUser.setDeveloper(is_developer);

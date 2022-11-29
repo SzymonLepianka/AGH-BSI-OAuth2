@@ -21,8 +21,7 @@ function App() {
     gapi.load("client:auth2", initClient);
   });
 
-  var accessToken = gapi.auth.getToken().access_token;
-  console.log(accessToken)
+  // console.log(gapi.auth?.getToken().access_token)
 
   return (
     <div>
