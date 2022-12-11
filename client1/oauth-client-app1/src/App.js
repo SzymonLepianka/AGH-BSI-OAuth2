@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useContext, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { LoginPage } from "./pages/LoginPage";
+import { HomePage } from "./pages/HomePage.jsx";
+
+export const TokenContext = React.createContext(null);
+
+const ProtectedRoute = ({ element }) => {
+  const [token] = useContext(TokenContext);
+  return token ? element() : <Navigate to="/login" />;
+};
 
 function App() {
+  const [token, setToken] = useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <TokenContext.Provider value={[token, setToken]}>
+          <Routes>
+            <Route path="/" element={<ProtectedRoute element={HomePage} />} />
+            <Route path="login" element={<LoginPage />} />
+          </Routes>
+        </TokenContext.Provider>
+      </BrowserRouter>
     </div>
   );
 }
