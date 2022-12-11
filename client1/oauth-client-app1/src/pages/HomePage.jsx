@@ -8,18 +8,17 @@ import React, { useContext } from "react";
 import { TokenContext } from "../App";
 
 export const HomePage = () => {
+  const [token] = useContext(TokenContext);
+  // const { isLoading, data: shoppingLists } = useQuery('shoppingLists', ()=>readShoppingListsRequest(token))
 
-    const [token] = useContext(TokenContext);
-    // const { isLoading, data: shoppingLists } = useQuery('shoppingLists', ()=>readShoppingListsRequest(token))
-
-    return (
-        <div>
-            <h1>Shopping List App</h1>
-            {/* {isLoading ? <ClipLoader size={150}/> : 
+  return (
+    <div>
+      <h1>Shopping List App</h1>
+      {/* {isLoading ? <ClipLoader size={150}/> : 
             shoppingLists.map(shoppingList => (
             <ShoppingList shoppingList={shoppingList} key={shoppingList._id}/>
             ))} */}
-            {/* <CreateShoppingListForm /> */}
-        </div>
-    )
-} 
+      {/* <CreateShoppingListForm /> */}
+    </div>
+  );
+};
