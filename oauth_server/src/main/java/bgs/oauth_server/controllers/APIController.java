@@ -92,6 +92,7 @@ public class APIController {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
             if (responseStatusException.getStatus() == HttpStatus.UNAUTHORIZED) {
+                System.out.println("AuthCode cookie is not set (createTokenFromCookie)");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AuthCode cookie is not set");
             }
         }

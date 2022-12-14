@@ -1,18 +1,18 @@
 import React, { useContext, useState } from "react";
-import loginRequest from "../api/loginRequest";
 import { useNavigate } from "react-router-dom";
+import accessTokenRequest from "../api/accessTokenRequest";
 import { TokenContext } from "../App";
 
 export const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const clientID = "2";
+
   const [error, setError] = useState("");
   const [token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
   const handleOauthLogin = (e) => {
     var myWindow = window.open(
-      "http://localhost:3002/login/2",
+      `http://localhost:3002/login/${clientID}`,
       "_blank",
       "height=500,width=600"
     );
@@ -20,7 +20,8 @@ export const LoginPage = () => {
     var timer = setInterval(function () {
       if (myWindow.closed) {
         clearInterval(timer);
-        //TODO next step after AuthCode
+        accessTokenRequest(clientID);
+        //TODO get user data
       }
     }, 1000);
   };

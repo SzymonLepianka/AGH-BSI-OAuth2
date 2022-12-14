@@ -124,7 +124,7 @@ public class WebController {
         try {
             var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
 
-            // dodaje cookie do resnopse
+            // dodaje cookie do response
             var authCode = (AuthCode) modelResponse.content;
             var cookieAuthCode = new Cookie("AuthCode", authCode.getContent());
             cookieAuthCode.setPath("/");
