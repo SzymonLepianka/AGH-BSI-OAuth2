@@ -1,8 +1,8 @@
 package bgs.oauth_server.controllers;
 
+import bgs.oauth_server.domain.*;
 import bgs.oauth_server.model.*;
 import bgs.oauth_server.view.*;
-import org.apache.tomcat.util.codec.binary.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.*;
@@ -15,6 +15,7 @@ import org.springframework.web.util.*;
 
 import javax.servlet.http.*;
 import java.sql.*;
+import java.util.*;
 
 @Controller
 @RequestMapping(path = "/web", produces = MediaType.TEXT_HTML_VALUE)
@@ -114,11 +115,25 @@ public class WebController {
 //        }
 //    }
 
-    @PostMapping(value = "/login", params = "clientID")
-    public String handleLogin(@RequestParam String clientID, @RequestParam String username, @RequestParam String password, HttpServletResponse httpServletResponse) {
+    @PostMapping(value = "/login")
+    @ResponseBody
+    public String handleLogin(@RequestBody Map<String, String> json, HttpServletResponse httpServletResponse) {
+        String username = json.get("username");
+        String password = json.get("password");
+        String clientID = json.get("clientID");
         try {
             var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
-            return WebView.LoginView(modelResponse, httpServletResponse);
+
+            // dodaje cookie do resnopse
+            var authCode = (AuthCode) modelResponse.content;
+            var cookieAuthCode = new Cookie("AuthCode", authCode.getContent());
+            cookieAuthCode.setPath("/");
+            httpServletResponse.addCookie(cookieAuthCode);
+
+            // zamiast strony "alreadyLogged" zwraca AuthCode
+            return authCode.getContent();
+//            return WebView.LoginView(modelResponse, httpServletResponse);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
