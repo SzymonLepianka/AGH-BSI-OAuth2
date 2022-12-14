@@ -10,39 +10,28 @@ export const LoginPage = () => {
   const [token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    loginRequest(username, password)
-      .then(({ token }) => {
-        setToken(token);
-        navigate("/");
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+  const handleOauthLogin = (e) => {
+    var myWindow = window.open(
+      "http://localhost:3002/login/2",
+      "_blank",
+      "height=500,width=600"
+    );
+
+    var timer = setInterval(function () {
+      if (myWindow.closed) {
+        clearInterval(timer);
+        //TODO next step after AuthCode
+      }
+    }, 1000);
   };
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>Login with OAuth2 - client1 front</h1>
       <div style={{ color: "red" }}>{error}</div>
-      <form onSubmit={handleLogin}>
-        {`Username: `}
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br></br>
-        {`Password: `}
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br></br>
-        <button>Login</button>
-      </form>
+      <button type="button" onClick={handleOauthLogin}>
+        Login
+      </button>
     </div>
   );
 };

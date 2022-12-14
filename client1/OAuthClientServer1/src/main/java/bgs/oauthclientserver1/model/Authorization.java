@@ -20,7 +20,7 @@ import java.util.*;
 @Service("Authorization")
 public class Authorization {
 
-    public String Authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+    public String authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

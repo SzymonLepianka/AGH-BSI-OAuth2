@@ -38,7 +38,7 @@ public class UsersController {
     String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
 
         //autoryzacja
-        String accessToken = authorization.Authorize(username, httpServletResponse);
+        String accessToken = authorization.authorize(username, httpServletResponse);
 
         User userData = getUserData.getUserData(username, accessToken, httpServletResponse);
         return view.getUserData(userData);
@@ -62,7 +62,7 @@ public class UsersController {
 
         //autoryzacja
         String username = dataFromDB.getUsernameById(id);
-        authorization.Authorize(username, httpServletResponse);
+        authorization.authorize(username, httpServletResponse);
 
         var user = dataFromDB.getUserFromDB(id);
         usersAccessService.remove(user);
