@@ -24,7 +24,6 @@ public class ValidateToken {
     private AppsAccessService appsAccessService;
 
     public boolean validateToken(String accessToken) throws SQLException {
-
         Integer clientID = getClientID(accessToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
@@ -32,7 +31,15 @@ public class ValidateToken {
 
         //dekoduję z otrzymanego tokenu issuedAt, expiration, scopes i subject(userID)
         TokenDecoder tokenDecoder = new TokenDecoder();
-        Claims claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
+        Claims claims;
+        try {
+            claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
+            System.out.println("Udało się zdekodować token: " + accessToken);
+        } catch (Exception e) {
+            System.out.println("Nie udało się zdekodować tokena :" + accessToken);
+            return false;
+        }
+
         String scopes = (String) claims.get("scopes");
         Integer userID = Integer.parseInt(claims.getSubject());
         // ustawiam format Timestamp issuedAt i expiration

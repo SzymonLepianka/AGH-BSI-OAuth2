@@ -23,6 +23,8 @@ public class Authorization {
                 if (cookie.getName().startsWith("AccessToken")) {
                     if (validateToken.validateToken(cookie.getValue())) {
                         return;
+                    } else {
+                        System.out.println("Walidacja nie przeszła");
                     }
                 }
             }
@@ -43,5 +45,12 @@ public class Authorization {
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    public void authorize(String clientID, String accessToken) throws ResponseStatusException, SQLException {
+        if (validateToken.validateToken(accessToken)) {
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

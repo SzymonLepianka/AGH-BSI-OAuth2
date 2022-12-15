@@ -5,6 +5,7 @@ import { OauthLoginPage } from "./pages/OauthLoginPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 import { LoginSuccessPage } from "./pages/LoginSuccessPage";
+import { AlreadyLoggedPage } from "./pages/AlreadyLoggedPage";
 import { getSessionCookie } from "./middleware/session";
 
 export const SessionContext = React.createContext(getSessionCookie());
@@ -28,6 +29,7 @@ function App() {
             {/* oauth login functionality */}
             <Route path="/login/:clientID" element={<OauthLoginPage />} />
             <Route path="/login-success" element={<LoginSuccessPage />} />
+            <Route path="/already-logged" element={<AlreadyLoggedPage />} />
 
             {/* app functionalities */}
             <Route path="/" element={<ProtectedRoute element={HomePage} />} />

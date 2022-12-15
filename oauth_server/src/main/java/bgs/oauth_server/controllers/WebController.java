@@ -48,14 +48,17 @@ public class WebController {
 //    }
 
     @GetMapping(value = "/login", params = "clientID")
+    @ResponseBody
     public String loginFormWithClientID(@RequestParam String clientID, HttpServletResponse httpServletResponse, Model model) {
         model.addAttribute("clientID", clientID);
+        System.out.println("kontroler: loginFormWithClientID (clientID=" + clientID + ")");
         try {
             authorization.authorize();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
             if (responseStatusException.getStatus() == HttpStatus.UNAUTHORIZED) {
+                System.out.println("autoryzacja nie przeszła");
                 return "loginForm";
             }
         }
@@ -67,10 +70,21 @@ public class WebController {
                 for (var cookie : cookies) {
                     if (cookie.getName().startsWith("AccessToken") && validateToken.validateToken(cookie.getValue())) {
                         var modelResponse = logInUser.handle(cookie.getValue(), clientID, passwordEncoder);
-                        return WebView.LoginView(modelResponse, httpServletResponse);
+                        System.out.println("Tworzenie nowego AuthCode");
+
+                        // dodaje cookie do response
+                        var authCode = (AuthCode) modelResponse.content;
+                        var cookieAuthCode = new Cookie("AuthCode", authCode.getContent());
+                        cookieAuthCode.setPath("/");
+                        httpServletResponse.addCookie(cookieAuthCode);
+
+                        // zamiast strony "alreadyLogged" zwraca AuthCode
+                        return authCode.getContent();
+//                        return WebView.LoginView(modelResponse, httpServletResponse);
                     }
                 }
             } else {
+                System.out.println("Token się zgadza, powrót bez tworzenia nowego");
                 return "AlreadyLogged";
             }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -121,6 +135,8 @@ public class WebController {
         String username = json.get("username");
         String password = json.get("password");
         String clientID = json.get("clientID");
+        System.out.println("kontroler: handleLogin (POST)");
+
         try {
             var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
 

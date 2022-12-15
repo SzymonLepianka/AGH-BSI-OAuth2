@@ -215,7 +215,7 @@ public class APIController {
     public @ResponseBody String getUserData(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.authorize(clientID);
+            authorization.authorize(clientID, accessToken);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {

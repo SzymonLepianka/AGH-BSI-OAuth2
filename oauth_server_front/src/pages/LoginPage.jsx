@@ -31,7 +31,7 @@ export const LoginPage = () => {
     if (session) {
       navigate("/");
     }
-  }, []);
+  });
 
   return (
     <div>

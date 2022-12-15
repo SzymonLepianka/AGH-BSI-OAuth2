@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import oauthLoginRequest from "../api/oauthLoginRequest";
 import { useNavigate, useParams } from "react-router-dom";
+import { SessionContext } from "../App";
+import oauthAlreadyLoggedRequest from "../api/oauthAlreadyLoggedRequest";
 
 export const OauthLoginPage = () => {
   const { clientID } = useParams();
@@ -8,6 +10,7 @@ export const OauthLoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [session, setSession] = useContext(SessionContext);
   const navigate = useNavigate();
 
   const timeout = (delay) => {
@@ -27,6 +30,26 @@ export const OauthLoginPage = () => {
         setError(err.message);
       });
   };
+
+  useEffect(() => {
+    if (session) {
+      oauthAlreadyLoggedRequest(clientID).then((res) => {
+        if (res === "AlreadyLogged") {
+          navigate("/already-logged");
+          timeout(1500).then(() => {
+            window.close();
+          });
+        } else if (res === "loginForm") {
+          return;
+        } else {
+          //TODO zwrócono AuthCode
+          console.log(res);
+        }
+      });
+    } else {
+      console.log("nie ma sesji");
+    }
+  });
 
   return (
     <div>
