@@ -33,32 +33,18 @@ public class UsersController {
         this.view = new APIView();
     }
 
-    @GetMapping(path = "/{username}")
-    public @ResponseBody
-    String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
-
-        //autoryzacja
-        String accessToken = authorization.authorize(username, httpServletResponse);
-
-        User userData = getUserData.getUserData(username, accessToken, httpServletResponse);
-        return view.getUserData(userData);
-    }
-
     @GetMapping(path = "/getUserData")
-    public @ResponseBody
-    String getUser2(HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
+    public @ResponseBody String getUser(HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
 
         //autoryzacja
-        String accessToken = authorization.authorize2(httpServletResponse);
+        String accessToken = authorization.authorize(httpServletResponse);
 
-        User userData = getUserData.getUserData2(accessToken, httpServletResponse);
+        User userData = getUserData.getUserData(accessToken);
         return view.getUserData(userData);
     }
 
     @PostMapping(path = "/add")
-    public @ResponseBody
-    String addUser(@RequestParam String username, @RequestParam String password, @RequestParam String email,
-                   @RequestParam String firstName, @RequestParam String surname, @RequestParam String birthDate) {
+    public @ResponseBody String addUser(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam String firstName, @RequestParam String surname, @RequestParam String birthDate) {
         boolean b = addUser.addUser(username, password, email, firstName, surname, birthDate);
         if (b) {
             return "Saved";
@@ -68,12 +54,11 @@ public class UsersController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody
-    String deleteUser(@PathVariable String id, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
+    public @ResponseBody String deleteUser(@PathVariable String id, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = dataFromDB.getUsernameById(id);
-        authorization.authorize(username, httpServletResponse);
+        authorization.authorizeOnUsername(username, httpServletResponse);
 
         var user = dataFromDB.getUserFromDB(id);
         usersAccessService.remove(user);

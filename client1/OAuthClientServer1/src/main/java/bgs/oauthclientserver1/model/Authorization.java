@@ -20,7 +20,7 @@ import java.util.*;
 @Service("Authorization")
 public class Authorization {
 
-    public String authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+    public String authorizeOnUsername(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -51,7 +51,7 @@ public class Authorization {
         return accessTokenCookie.getValue();
     }
 
-    public String authorize2(HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+    public String authorize(HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
