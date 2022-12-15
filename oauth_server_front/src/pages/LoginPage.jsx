@@ -1,21 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import loginRequest from "../api/loginRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import accessTokenRequest from "../api/accessTokenRequest";
+import { SessionContext } from "../App";
+import { getSessionCookie } from "../middleware/session";
 
 export const LoginPage = () => {
   const { clientID } = useParams();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [session, setSession] = useContext(SessionContext);
   const navigate = useNavigate();
 
-  const handleOauthLogin = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     loginRequest(username, password, clientID)
       .then(() => {
         accessTokenRequest().then(() => {
+          setSession(getSessionCookie());
           navigate("/");
         });
       })
@@ -24,11 +27,17 @@ export const LoginPage = () => {
       });
   };
 
+  useEffect(() => {
+    if (session) {
+      navigate("/");
+    }
+  }, []);
+
   return (
     <div>
       <h1>OAuth-server-front-login-page</h1>
       <div style={{ color: "red" }}>{error}</div>
-      <form onSubmit={handleOauthLogin}>
+      <form onSubmit={handleLogin}>
         {`Username: `}
         <input
           type="text"
