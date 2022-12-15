@@ -1,9 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import loginRequest from "../api/loginRequest";
 import { useNavigate, useParams } from "react-router-dom";
-import { TokenContext } from "../App";
 import accessTokenRequest from "../api/accessTokenRequest";
-import Cookies from "js-cookie";
 
 export const LoginPage = () => {
   const { clientID } = useParams();
@@ -11,7 +9,6 @@ export const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [_token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
   const handleOauthLogin = (e) => {
@@ -19,8 +16,6 @@ export const LoginPage = () => {
     loginRequest(username, password, clientID)
       .then(() => {
         accessTokenRequest().then(() => {
-          const accessToken = Cookies.get("AccessToken1");
-          setToken(accessToken);
           navigate("/");
         });
       })

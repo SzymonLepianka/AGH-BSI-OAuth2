@@ -1,25 +1,29 @@
 import "./App.css";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { OauthLoginPage } from "./pages/OauthLoginPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 import { LoginSuccessPage } from "./pages/LoginSuccessPage";
+import { getSessionCookie } from "./middleware/session";
 
-export const TokenContext = React.createContext(null);
+export const SessionContext = React.createContext(getSessionCookie());
 
 const ProtectedRoute = ({ element }) => {
-  const [token] = useContext(TokenContext);
-  return token ? element() : <Navigate to="/login" />;
+  const [session] = useContext(SessionContext);
+  return session ? element() : <Navigate to="/login" />;
 };
 
 function App() {
-  const [token, setToken] = useState(null);
+  const [session, setSession] = useState(getSessionCookie());
+  useEffect(() => {
+    setSession(getSessionCookie());
+  }, [session]);
 
   return (
     <div className="App">
       <BrowserRouter>
-        <TokenContext.Provider value={[token, setToken]}>
+        <SessionContext.Provider value={[session, setSession]}>
           <Routes>
             {/* oauth login functionality */}
             <Route path="/login/:clientID" element={<OauthLoginPage />} />
@@ -29,7 +33,7 @@ function App() {
             <Route path="/" element={<ProtectedRoute element={HomePage} />} />
             <Route path="/login" element={<LoginPage />} />
           </Routes>
-        </TokenContext.Provider>
+        </SessionContext.Provider>
       </BrowserRouter>
     </div>
   );

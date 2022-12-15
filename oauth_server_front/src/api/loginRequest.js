@@ -14,7 +14,6 @@ export default (username, password) => {
       }
     )
     .then((response) => {
-      console.log("loginReguestRes: ", response);
       return response.data;
     })
     .catch((error) => {

@@ -1,7 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import oauthLoginRequest from "../api/oauthLoginRequest";
 import { useNavigate, useParams } from "react-router-dom";
-import { TokenContext } from "../App";
 
 export const OauthLoginPage = () => {
   const { clientID } = useParams();
@@ -9,7 +8,6 @@ export const OauthLoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
   const timeout = (delay) => {
