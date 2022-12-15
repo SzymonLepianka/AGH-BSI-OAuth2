@@ -3,6 +3,8 @@ package bgs.oauthclientserver1.view;
 import bgs.oauthclientserver1.domain.*;
 import org.json.*;
 
+import java.text.*;
+
 public class APIView {
     public String getUserData(User user) {
         var userJSON = new JSONObject();
@@ -11,7 +13,9 @@ public class APIView {
         userJSON.put("first_name", user.getFirstName());
         userJSON.put("surname", user.getSurname());
         userJSON.put("username", user.getUsername());
-        userJSON.put("birth_date", user.getBirthDate());
+
+        SimpleDateFormat ymdFormat = new SimpleDateFormat("yyyy-MM-dd");
+        userJSON.put("birth_date", ymdFormat.format(user.getBirthDate()));
         return userJSON.toString();
     }
 }

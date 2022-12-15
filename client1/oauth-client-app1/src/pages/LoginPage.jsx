@@ -8,6 +8,13 @@ export const LoginPage = () => {
   const clientID = "2";
 
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [logged, setLogged] = useState(false);
+
   const [token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
@@ -21,9 +28,21 @@ export const LoginPage = () => {
     var timer = setInterval(function () {
       if (myWindow.closed) {
         clearInterval(timer);
-        accessTokenRequest(clientID).then(()=>{
-          userDataRequest()
-        })
+        accessTokenRequest(clientID)
+          .then(() => {
+            userDataRequest().then((userData) => {
+              setLogged(true);
+              setError("");
+              setEmail(userData.email);
+              setFirstName(userData.first_name);
+              setSurname(userData.surname);
+              setUsername(userData.username);
+              setBirthDate(userData.birth_date);
+            });
+          })
+          .catch((error) => {
+            setError(error);
+          });
       }
     }, 1000);
   };
@@ -31,10 +50,21 @@ export const LoginPage = () => {
   return (
     <div>
       <h1>Login with OAuth2 - client1 front</h1>
-      <div style={{ color: "red" }}>{error}</div>
-      <button type="button" onClick={handleOauthLogin}>
-        Login
-      </button>
+      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+      {email && <div style={{ color: "black" }}>Email: {email}</div>}
+      {username && <div style={{ color: "black" }}>User Name: {username}</div>}
+      {firstName && (
+        <div style={{ color: "black" }}>First Name: {firstName}</div>
+      )}
+      {surname && <div style={{ color: "black" }}>Surname: {surname}</div>}
+      {birthDate && (
+        <div style={{ color: "black" }}>Birthdate: {birthDate}</div>
+      )}
+      {!logged && (
+        <button type="button" onClick={handleOauthLogin}>
+          Login
+        </button>
+      )}
     </div>
   );
 };
