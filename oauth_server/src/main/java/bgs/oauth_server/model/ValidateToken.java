@@ -36,7 +36,7 @@ public class ValidateToken {
             claims = tokenDecoder.decodeToken(accessToken, appSecret.toString());
             System.out.println("Udało się zdekodować token: " + accessToken);
         } catch (Exception e) {
-            System.out.println("Nie udało się zdekodować tokena :" + accessToken);
+            System.out.println("Nie udało się zdekodować tokena: " + accessToken);
             return false;
         }
 

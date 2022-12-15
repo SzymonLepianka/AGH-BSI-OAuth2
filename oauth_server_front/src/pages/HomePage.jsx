@@ -1,57 +1,69 @@
-import React, { useContext } from "react";
-import loginRequest from "../api/oauthLoginRequest";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SessionContext } from "../App";
+import userDataRequest from "../api/userDataRequest";
+import logoutRequest from "../api/logoutRequest";
 
 export const HomePage = () => {
-  // const { clientID } = useParams();
-
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [error, setError] = useState("");
-  const session = useContext(SessionContext);
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [session, setSession] = useContext(SessionContext);
 
   const navigate = useNavigate();
 
-  // const timeout = (delay) => {
-  //   return new Promise((res) => setTimeout(res, delay));
-  // };
+  useEffect(() => {
+    if (session) {
+      userDataRequest(session).then((res) => {
+        setEmail(res.user_email);
+        setFirstName(res.user_firstname);
+        setSurname(res.user_surname);
+        setUsername(res.user_username);
+        setBirthDate(res.user_birthdate);
+        setPhoneNumber(res.user_phonenumber);
+      });
+    }
+  });
 
-  // const handleOauthLogin = (e) => {
-  //   e.preventDefault();
-  //   loginRequest(username, password, clientID)
-  //     .then(() => {
-  //       navigate("/login-success");
-  //       timeout(1500).then(() => {
-  //         window.close();
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       setError(err.message);
-  //     });
-  // };
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logoutRequest(session)
+      .then(() => {
+        setSession("");
+        navigate("/login");
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  };
 
   return (
     <div>
       <h1>OAuth-server-front-home-page</h1>
-      {/* <div style={{ color: "red" }}>{error}</div> */}
-      {/* <form onSubmit={handleOauthLogin}>
-        {`Username: `}
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br></br>
-        {`Password: `}
-        <input  
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br></br>
-        <button>Login</button>
-      </form> */}
+      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+      <h2>User data:</h2>
+      {email && <div style={{ color: "black" }}>Email: {email}</div>}
+      {username && <div style={{ color: "black" }}>User Name: {username}</div>}
+      {firstName && (
+        <div style={{ color: "black" }}>First Name: {firstName}</div>
+      )}
+      {surname && <div style={{ color: "black" }}>Surname: {surname}</div>}
+      {birthDate && (
+        <div style={{ color: "black" }}>Birthdate: {birthDate}</div>
+      )}
+      {phoneNumber && (
+        <div style={{ color: "black" }}>Phone number: {phoneNumber}</div>
+      )}
+      <h2>Actions:</h2>
+      {
+        <button type="button" onClick={handleLogout}>
+          Logout
+        </button>
+      }
     </div>
   );
 };
