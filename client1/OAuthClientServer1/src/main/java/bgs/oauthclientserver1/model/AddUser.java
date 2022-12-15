@@ -37,7 +37,6 @@ public class AddUser {
     public boolean addUser(String username, String password, String email, String firstName, String surname, String birthDate) {
         User n = new User();
         n.setUsername(username);
-        n.setPassword(hashPassword(password));
         n.setEmail(email);
         n.setFirstName(firstName);
         n.setSurname(surname);

@@ -18,7 +18,6 @@ public class UsersAccessService {
     private User createUserFromResult(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));
-        user.setPassword(rs.getString("password"));
         user.setEmail(rs.getString("email"));
         user.setBirthDate(rs.getDate("birth_date"));
         user.setFirstName(rs.getString("first_name"));
@@ -50,24 +49,22 @@ public class UsersAccessService {
         parameters.addValue("birth_date", object.getBirthDate());
         parameters.addValue("email", object.getEmail());
         parameters.addValue("first_name", object.getFirstName());
-        parameters.addValue("password", object.getPassword());
         parameters.addValue("surname", object.getSurname());
         parameters.addValue("username", object.getUsername());
-        final String sql = "insert into oauth.users (birth_date, email, first_name, password, surname, username) values (:birth_date, :email, :first_name, :password, :surname, :username)";
+        final String sql = "insert into oauth.users (birth_date, email, first_name, surname, username) values (:birth_date, :email, :first_name, :surname, :username)";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }
 
-    public User update(User object) {
+    public User updateOnUsername(User object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("user_id", object.getUserId());
+//        parameters.addValue("user_id", object.getUserId());
         parameters.addValue("birth_date", object.getBirthDate());
         parameters.addValue("email", object.getEmail());
         parameters.addValue("first_name", object.getFirstName());
-        parameters.addValue("password", object.getPassword());
         parameters.addValue("surname", object.getSurname());
         parameters.addValue("username", object.getUsername());
-        final String sql = "update oauth.users set birth_date = :birth_date, email = :email, first_name = :first_name, password = :password, surname = :surname, username = :username where user_id = :user_id";
+        final String sql = "update oauth.users set birth_date = :birth_date, email = :email, first_name = :first_name, surname = :surname where username = :username";
         namedJdbcTemplate.update(sql, parameters);
         return object;
     }

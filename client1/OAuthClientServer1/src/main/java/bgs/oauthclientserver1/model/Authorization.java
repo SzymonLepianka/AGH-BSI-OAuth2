@@ -50,6 +50,39 @@ public class Authorization {
         }
         return accessTokenCookie.getValue();
     }
+
+    public String authorize2(HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+        String appSecret = "222222";
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken2");
+        if (accessTokenCookie == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessTokenCookie is null");
+        } else {
+            var accessToken = accessTokenCookie.getValue();
+            Claims claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(DatatypeConverter.parseBase64Binary(appSecret))
+                        .parseClaimsJws(accessToken).getBody();
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, accessToken is invalid");
+            }
+//            String username1 = (String) claims.get("username");
+//            if (!username1.equals(username)) {
+//                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username does not match");
+//            }
+            if (claims.getExpiration().before(Date.from(Instant.now()))) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
+            }
+            if (!validateToken(accessToken, httpServletResponse)){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is invalid, after checking with oauth server");
+            }
+        }
+        return accessTokenCookie.getValue();
+    }
+
+
     private boolean validateToken(String accessToken, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
 
         String url = "http://localhost:8080/api/validateToken?clientID=2&accessToken=" + accessToken;

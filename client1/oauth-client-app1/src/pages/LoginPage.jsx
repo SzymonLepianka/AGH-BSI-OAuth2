@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import accessTokenRequest from "../api/accessTokenRequest";
+import userDataRequest from "../api/userDataRequest";
 import { TokenContext } from "../App";
 
 export const LoginPage = () => {
@@ -20,8 +21,9 @@ export const LoginPage = () => {
     var timer = setInterval(function () {
       if (myWindow.closed) {
         clearInterval(timer);
-        accessTokenRequest(clientID);
-        //TODO get user data
+        accessTokenRequest(clientID).then(()=>{
+          userDataRequest()
+        })
       }
     }, 1000);
   };

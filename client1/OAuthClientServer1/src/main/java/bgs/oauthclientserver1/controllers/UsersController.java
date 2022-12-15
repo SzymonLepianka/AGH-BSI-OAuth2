@@ -44,6 +44,17 @@ public class UsersController {
         return view.getUserData(userData);
     }
 
+    @GetMapping(path = "/getUserData")
+    public @ResponseBody
+    String getUser2(HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
+
+        //autoryzacja
+        String accessToken = authorization.authorize2(httpServletResponse);
+
+        User userData = getUserData.getUserData2(accessToken, httpServletResponse);
+        return view.getUserData(userData);
+    }
+
     @PostMapping(path = "/add")
     public @ResponseBody
     String addUser(@RequestParam String username, @RequestParam String password, @RequestParam String email,

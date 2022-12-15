@@ -11,6 +11,7 @@ public class APIView {
         userJSON.put("first_name", user.getFirstName());
         userJSON.put("surname", user.getSurname());
         userJSON.put("username", user.getUsername());
+        userJSON.put("birth_date", user.getBirthDate());
         return userJSON.toString();
     }
 }

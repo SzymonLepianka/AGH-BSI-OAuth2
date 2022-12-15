@@ -1,17 +1,18 @@
 import axios from "axios";
 
-export default (clientID) => {
+export default () => {
   return axios
-    .get(`http://localhost:8080/api/createToken?clientID=${clientID}`, {
+    .get(`http://localhost:8081/users/getUserData`, {
       withCredentials: true,
     })
     .then((response) => {
+      console.log(response)
       if (response.status === 200) {
         console.log(response.data);
         return response.data;
       } else {
         console.log(response);
-        throw new Error("Creating token failed (" + response.status + ")");
+        throw new Error("Getting user data failed (" + response.status + ")");
       }
     })
     .catch((error) => {
