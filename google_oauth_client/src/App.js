@@ -21,8 +21,6 @@ function App() {
     gapi.load("client:auth2", initClient);
   });
 
-  // console.log(gapi.auth?.getToken().access_token)
-
   return (
     <div>
       <h2>React Google Login</h2>
