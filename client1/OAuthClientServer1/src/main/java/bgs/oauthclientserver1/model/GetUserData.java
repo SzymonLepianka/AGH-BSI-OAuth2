@@ -5,11 +5,14 @@ import bgs.oauthclientserver1.domain.*;
 import org.json.*;
 import org.riversun.okhttp3.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
 import java.io.*;
+import java.net.HttpCookie;
 import java.net.*;
+import java.net.http.HttpRequest;
 import java.net.http.*;
 import java.text.*;
 import java.util.*;
@@ -22,11 +25,10 @@ public class GetUserData {
     @Autowired
     private GetScopes getScopes;
 
-    public User getUserData(String accessToken) throws ResponseStatusException, IOException, InterruptedException, ParseException {
+    public User getUserData(String accessToken) throws IOException, InterruptedException, ParseException {
 
         List<User> allUsersFromDataBase = usersAccessService.readAll();
         List<String> scopesFromAccessToken = getScopes.getScopes(accessToken);
-        User user;
         String url = "http://localhost:8080/api/getUserData?clientID=2&accessToken=" + accessToken;
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
         cookieHelper.setCookie(url, "AccessToken2", accessToken);
@@ -37,8 +39,12 @@ public class GetUserData {
         accessToken2Cookie.setPath("/");
         cookieStore.add(URI.create(url), accessToken2Cookie);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JSONObject jsonObject1 = new JSONObject(response.body());
 
+        if (response.statusCode() != 200) {
+            throw new ResponseStatusException(Objects.requireNonNull(HttpStatus.resolve(response.statusCode())), "Bad response status from oauth_server - " + response.body());
+        }
+
+        JSONObject jsonObject1 = new JSONObject(response.body());
         String user_email = null;
         String user_firstname = null;
         String user_username = null;
@@ -59,7 +65,7 @@ public class GetUserData {
         if (scopesFromAccessToken.contains("user_birthdate")) {
             user_birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(jsonObject1.get("user_birthdate").toString());
         }
-        user = new User();
+        User user = new User();
         user.setEmail(user_email);
         user.setFirstName(user_firstname);
         user.setUsername(user_username);

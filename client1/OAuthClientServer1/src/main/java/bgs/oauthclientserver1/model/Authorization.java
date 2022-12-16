@@ -51,7 +51,7 @@ public class Authorization {
         return accessTokenCookie.getValue();
     }
 
-    public String authorize(HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+    public String authorize(HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
