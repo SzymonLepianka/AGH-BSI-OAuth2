@@ -2,17 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import accessTokenRequest from "../api/accessTokenRequest";
 import userDataRequest from "../api/userDataRequest";
-import { TokenContext } from "../App";
 import { gapi } from "gapi-script";
 import GoogleLoginComponent from "../components/googleLogin";
 import GoogleLogoutComponent from "../components/googleLogout";
+import {
+  CLIENT_ID,
+  GOOGLE_CLIENT_ID,
+  OAUTH_SERVER_FRONT_URL,
+} from "../api/config";
 
 export const LoginPage = () => {
-  const clientID = "2";
-
-  const googleClientId =
-    "868591954044-jsaqecvi69jev4u38kus5qj3h0atio3g.apps.googleusercontent.com";
-
   const [profile, setProfile] = useState(null);
 
   const [error, setError] = useState("");
@@ -23,13 +22,12 @@ export const LoginPage = () => {
   const [birthDate, setBirthDate] = useState("");
   const [logged, setLogged] = useState(false);
 
-  const [token, setToken] = useContext(TokenContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const initClient = () => {
       gapi.auth2.init({
-        clientId: googleClientId,
+        clientId: GOOGLE_CLIENT_ID,
         scope: "",
       });
     };
@@ -38,7 +36,7 @@ export const LoginPage = () => {
 
   const handleOauthLogin = (e) => {
     var myWindow = window.open(
-      `http://localhost:3002/login/${clientID}`,
+      `${OAUTH_SERVER_FRONT_URL}/login/${CLIENT_ID}`,
       "_blank",
       "height=500,width=600"
     );
@@ -46,7 +44,7 @@ export const LoginPage = () => {
     var timer = setInterval(function () {
       if (myWindow.closed) {
         clearInterval(timer);
-        accessTokenRequest(clientID)
+        accessTokenRequest()
           .then(() => {
             userDataRequest().then((userData) => {
               setLogged(true);

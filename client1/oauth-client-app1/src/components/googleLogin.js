@@ -1,7 +1,5 @@
 import { GoogleLogin } from "react-google-login";
-
-const clientId =
-  "868591954044-jsaqecvi69jev4u38kus5qj3h0atio3g.apps.googleusercontent.com";
+import { GOOGLE_CLIENT_ID } from "../api/config";
 
 function GoogleLoginComponent(props) {
   const onSuccess = (res) => {
@@ -16,7 +14,7 @@ function GoogleLoginComponent(props) {
   return (
     <div id="googleSignInButton">
       <GoogleLogin
-        clientId={clientId}
+        clientId={GOOGLE_CLIENT_ID}
         buttonText="Sign in with Google"
         onSuccess={onSuccess}
         onFailure={onFailure}

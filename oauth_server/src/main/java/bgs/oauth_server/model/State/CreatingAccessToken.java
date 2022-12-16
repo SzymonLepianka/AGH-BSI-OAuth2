@@ -81,7 +81,7 @@ public class CreatingAccessToken implements State {
             params.put("scopes", scopes.toString());
         }
 
-//        //sprawdzam czy taki accesstoken już istnieje
+//        //sprawdzam czy taki AccessToken już istnieje
 //        List<AccessToken> accessTokensFromDataBase = db.getAccessTokensAccessObject().readAll();
 //        AccessToken accessToken1 = accessTokensFromDataBase.stream()
 //                .filter(at -> scopes.toString().equals(at.getScopes()) &&
@@ -106,7 +106,7 @@ public class CreatingAccessToken implements State {
         accessToken.setUpdatedAt(createdAt);
         accessTokensAccessService.create(accessToken);
 
-        // czytam z danych appSecret clienta z danym clientID
+        // czytam z danych appSecret klienta z danym clientID
         Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
 
         // czytam z danych username z danym userID

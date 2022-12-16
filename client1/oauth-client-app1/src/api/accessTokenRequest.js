@@ -1,8 +1,9 @@
 import axios from "axios";
+import { CLIENT_ID, OAUTH_SERVER_URL } from "./config";
 
-export default (clientID) => {
+export default () => {
   return axios
-    .get(`http://localhost:8080/api/createToken?clientID=${clientID}`, {
+    .get(`${OAUTH_SERVER_URL}/api/createToken?clientID=${CLIENT_ID}`, {
       withCredentials: true,
     })
     .then((response) => {

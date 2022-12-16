@@ -22,8 +22,7 @@ public class AuthenticatingClient implements State {
         System.out.println("AuthenticatingClient");
 
         // sprawdzam czy klient o danych clientId w params istnieje w bazie danych
-        if (appsAccessService.readById((Integer.parseInt(params.get("clientID")))) != null) {
-        } else {
+        if (appsAccessService.readById((Integer.parseInt(params.get("clientID")))) == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client with clientID=" + params.get("clientID") + " does not exist");
         }
         // wywołuję VerifyingDataFromClient w przypadku powodzenia

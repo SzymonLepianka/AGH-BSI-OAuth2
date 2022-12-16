@@ -1,8 +1,9 @@
 import axios from "axios";
+import { CLIENT_SERVER_URL } from "./config";
 
 export default () => {
   return axios
-    .get(`http://localhost:8081/users/getUserData`, {
+    .get(`${CLIENT_SERVER_URL}/users/getUserData`, {
       withCredentials: true,
     })
     .then((response) => {

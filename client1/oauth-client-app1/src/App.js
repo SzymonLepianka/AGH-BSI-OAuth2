@@ -2,7 +2,6 @@ import "./App.css";
 import React, { useContext, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
-import { HomePage } from "./pages/HomePage.jsx";
 
 export const TokenContext = React.createContext(null);
 
@@ -19,7 +18,7 @@ function App() {
       <BrowserRouter>
         <TokenContext.Provider value={[token, setToken]}>
           <Routes>
-            <Route path="/" element={<ProtectedRoute element={HomePage} />} />
+            {/* <Route path="/" element={<ProtectedRoute element={HomePage} />} /> */}
             <Route path="login" element={<LoginPage />} />
           </Routes>
         </TokenContext.Provider>
