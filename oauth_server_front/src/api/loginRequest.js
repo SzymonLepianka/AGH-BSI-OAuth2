@@ -1,9 +1,10 @@
 import axios from "axios";
+import { OAUTH_SERVER_URL } from "./config";
 
 export default (username, password) => {
   return axios
     .post(
-      "http://localhost:8080/web/login",
+      `${OAUTH_SERVER_URL}/web/login`,
       {
         username,
         password,

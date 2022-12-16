@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Cookies } from "react-cookie";
 import { removeAllCookies } from "../middleware/session";
+import { OAUTH_SERVER_URL } from "./config";
 
 export default () => {
   const cookieManager = new Cookies();
@@ -12,7 +13,7 @@ export default () => {
       promises.push(
         axios
           .get(
-            `http://localhost:8080/api/revokeToken?clientID=${clientID}&accessToken=${cookies[cookie]}`,
+            `${OAUTH_SERVER_URL}/api/revokeToken?clientID=${clientID}&accessToken=${cookies[cookie]}`,
             {
               withCredentials: true,
             }

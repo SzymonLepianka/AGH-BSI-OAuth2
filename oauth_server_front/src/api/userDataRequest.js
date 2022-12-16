@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Cookies } from "react-cookie";
+import { CLIENT_ID, OAUTH_SERVER_URL } from "./config";
 
 export default (sessionCookie) => {
   const cookieManager = new Cookies();
@@ -14,8 +15,8 @@ export default (sessionCookie) => {
 
   return axios
     .get(
-      `http://localhost:8080/api/getUserData?clientID=${
-        clientID ? clientID : 1
+      `${OAUTH_SERVER_URL}/api/getUserData?clientID=${
+        clientID ? clientID : CLIENT_ID
       }&accessToken=${sessionCookie}`,
       {
         withCredentials: true,

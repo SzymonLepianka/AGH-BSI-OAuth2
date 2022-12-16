@@ -1,10 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { OAUTH_SERVER_URL } from "./config";
 
 export default (username, password, clientID) => {
   return axios
     .post(
-      "http://localhost:8080/web/login",
+      `${OAUTH_SERVER_URL}/web/login`,
       {
         username,
         password,
