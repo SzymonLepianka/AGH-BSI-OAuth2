@@ -19,6 +19,11 @@ import java.util.*;
 @Service("GetUserData")
 public class GetUserData {
 
+    @Value("${oauth_server.domain}")
+    private String OAUTH_SERVER_DOMAIN;
+    @Value("${client_id}")
+    private String CLIENT_ID;
+
     @Autowired
     private UsersAccessService usersAccessService;
     @Autowired
@@ -27,13 +32,13 @@ public class GetUserData {
     public User getUserData(String accessToken) {
         List<User> allUsersFromDataBase = usersAccessService.readAll();
         List<String> scopesFromAccessToken = getScopes.getScopes(accessToken);
-        String url = "http://localhost:8080/api/getUserData?clientID=2&accessToken=" + accessToken;
+        String url = OAUTH_SERVER_DOMAIN + "/api/getUserData?clientID=" + CLIENT_ID + "&accessToken=" + accessToken;
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken2", accessToken);
+        cookieHelper.setCookie(url, "AccessToken" + CLIENT_ID, accessToken);
         HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
         CookieStore cookieStore = ((CookieManager) (client.cookieHandler().get())).getCookieStore();
-        HttpCookie accessToken2Cookie = new HttpCookie("AccessToken2", accessToken);
+        HttpCookie accessToken2Cookie = new HttpCookie("AccessToken" + CLIENT_ID, accessToken);
         accessToken2Cookie.setPath("/");
         cookieStore.add(URI.create(url), accessToken2Cookie);
         HttpResponse<String> response;

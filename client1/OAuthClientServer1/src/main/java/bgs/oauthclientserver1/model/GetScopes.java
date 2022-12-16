@@ -1,6 +1,7 @@
 package bgs.oauthclientserver1.model;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
 import javax.xml.bind.*;
@@ -8,9 +9,12 @@ import java.util.*;
 
 @Service("GetScopes")
 public class GetScopes {
+
+    @Value("${app.secret}")
+    private String APP_SECRET;
+
     public List<String> getScopes(String accessToken) {
-        String appSecret = "222222";
-        Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(appSecret)).parseClaimsJws(accessToken).getBody();
+        Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(APP_SECRET)).parseClaimsJws(accessToken).getBody();
 
         String scopesRaw = (String) claims.get("scopes");
 

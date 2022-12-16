@@ -1,7 +1,7 @@
 package bgs.oauthclientserver1.model;
 
 import io.jsonwebtoken.*;
-import org.riversun.okhttp3.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.context.request.*;
@@ -10,7 +10,6 @@ import org.springframework.web.util.*;
 
 import javax.servlet.http.*;
 import javax.xml.bind.*;
-import java.io.*;
 import java.net.*;
 import java.net.http.HttpRequest;
 import java.net.http.*;
@@ -20,11 +19,17 @@ import java.util.*;
 @Service("Authorization")
 public class Authorization {
 
-    public String authorizeOnUsername(String username) throws ResponseStatusException {
-        String appSecret = "222222";
+    @Value("${app.secret}")
+    private String APP_SECRET;
+    @Value("${oauth_server.domain}")
+    private String OAUTH_SERVER_DOMAIN;
+    @Value("${client_id}")
+    private String CLIENT_ID;
 
+
+    public String authorizeOnUsername(String username) throws ResponseStatusException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken2");
+        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken" + CLIENT_ID);
         if (accessTokenCookie == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessTokenCookie is null");
         } else {
@@ -32,7 +37,7 @@ public class Authorization {
             Claims claims;
             try {
                 claims = Jwts.parser()
-                        .setSigningKey(DatatypeConverter.parseBase64Binary(appSecret))
+                        .setSigningKey(DatatypeConverter.parseBase64Binary(APP_SECRET))
                         .parseClaimsJws(accessToken).getBody();
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, accessToken is invalid");
@@ -44,7 +49,7 @@ public class Authorization {
             if (claims.getExpiration().before(Date.from(Instant.now()))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
             }
-            if (!validateToken(accessToken)){
+            if (!validateToken(accessToken)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is invalid, after checking with oauth server");
             }
         }
@@ -52,10 +57,8 @@ public class Authorization {
     }
 
     public String authorize() throws ResponseStatusException {
-        String appSecret = "222222";
-
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken2");
+        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken" + CLIENT_ID);
         if (accessTokenCookie == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessTokenCookie is null");
         } else {
@@ -63,7 +66,7 @@ public class Authorization {
             Claims claims;
             try {
                 claims = Jwts.parser()
-                        .setSigningKey(DatatypeConverter.parseBase64Binary(appSecret))
+                        .setSigningKey(DatatypeConverter.parseBase64Binary(APP_SECRET))
                         .parseClaimsJws(accessToken).getBody();
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, accessToken is invalid");
@@ -71,7 +74,7 @@ public class Authorization {
             if (claims.getExpiration().before(Date.from(Instant.now()))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
             }
-            if (!validateToken(accessToken)){
+            if (!validateToken(accessToken)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is invalid, after checking with oauth server");
             }
         }
@@ -80,7 +83,7 @@ public class Authorization {
 
 
     private boolean validateToken(String accessToken) throws ResponseStatusException {
-        String url = "http://localhost:8080/api/validateToken?clientID=2&accessToken=" + accessToken;
+        String url = OAUTH_SERVER_DOMAIN + "/api/validateToken?accessToken=" + accessToken;
         HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
         try {
