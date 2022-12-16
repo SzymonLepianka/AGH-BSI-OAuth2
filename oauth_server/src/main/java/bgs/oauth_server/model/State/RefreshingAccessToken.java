@@ -6,7 +6,6 @@ import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
-import java.sql.*;
 import java.util.*;
 
 @Service("RefreshingAccessToken")
@@ -18,8 +17,7 @@ public class RefreshingAccessToken implements State {
     private CreatingAccessToken creatingAccessToken;
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
-
+    public Response handle(Map<String, String> params) {
         System.out.println("RefreshingAccessToken");
 
         // pobieram 'refreshToken' i 'clientID' z 'params'
@@ -40,7 +38,6 @@ public class RefreshingAccessToken implements State {
         accessTokensAccessService.remove(accessTokensAccessService.readById(accessTokenID));
 
         // zmieniam stan na CreatingAccessToken
-//        context.changeState(new CreatingAccessToken());
         return creatingAccessToken.handle(params);
     }
 

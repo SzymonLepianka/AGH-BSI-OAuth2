@@ -9,8 +9,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
-import java.sql.*;
-
 @Service("GetUserData")
 public class GetUserData {
 
@@ -21,7 +19,7 @@ public class GetUserData {
     @Autowired
     private UsersAccessService usersAccessService;
 
-    public JSONObject getUserData(Integer clientID, String accessToken)  {
+    public JSONObject getUserData(Integer clientID, String accessToken) throws ResponseStatusException {
 
         // tworzę JSONObject (zostanie zwrócony)
         JSONObject userData = new JSONObject();

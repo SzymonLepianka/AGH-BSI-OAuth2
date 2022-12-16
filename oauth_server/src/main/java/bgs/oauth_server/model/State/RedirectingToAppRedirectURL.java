@@ -20,7 +20,7 @@ public class RedirectingToAppRedirectURL implements State {
 
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params)   {
 
         System.out.println("RedirectingToAppRedirectURL");
 

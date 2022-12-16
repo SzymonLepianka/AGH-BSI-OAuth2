@@ -13,7 +13,7 @@ public class ExchangingAuthorizationCodeForAccessToken implements State {
     private CreatingAccessToken creatingAccessToken;
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params)   {
 
         System.out.println("ExchangingAuthorizationCodeForAccessToken");
 

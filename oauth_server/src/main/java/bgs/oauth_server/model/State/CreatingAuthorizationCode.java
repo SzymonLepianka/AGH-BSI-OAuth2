@@ -32,7 +32,7 @@ public class CreatingAuthorizationCode implements State {
 
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params)   {
 
         System.out.println("CreatingAuthorizationCode");
 

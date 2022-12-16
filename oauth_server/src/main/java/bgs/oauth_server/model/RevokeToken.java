@@ -23,7 +23,7 @@ public class RevokeToken {
     @Autowired
     private RefreshTokensAccessService refreshTokensAccessService;
 
-    public boolean revokeToken(Integer clientID, String accessToken) throws SQLException {
+    public boolean revokeToken(Integer clientID, String accessToken) throws ResponseStatusException {
 
         // czytam z bazy danych appSecret clienta z danym clientID
         Integer appSecret = appsAccessService.readById(clientID).getAppSecret();
@@ -48,36 +48,25 @@ public class RevokeToken {
 
         // pobieram z bazy danych accessTokens i szukam przekazanego w params 'accessToken'
         List<AccessToken> accessTokens = accessTokensAccessService.readAll();
-        AccessToken accessTokenFound = accessTokens.stream()
-                .filter(at -> (userID.equals(at.getUser().getUserId()) &&
-                        (issuedAt.equals(at.getCreatedAt()) ||
-                                Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) &&
-                        (expiration.equals(at.getExpiresAt()) ||
-                                Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) &&
-                        clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes())))
-                .findFirst()
-                .orElse(null);
+        AccessToken accessTokenFound = accessTokens.stream().filter(at -> (userID.equals(at.getUser().getUserId()) && (issuedAt.equals(at.getCreatedAt()) || Timestamp.valueOf(issuedAt.toLocalDateTime().plusSeconds(1)).equals(at.getCreatedAt())) && (expiration.equals(at.getExpiresAt()) || Timestamp.valueOf(expiration.toLocalDateTime().plusSeconds(1)).equals(at.getExpiresAt())) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes()))).findFirst().orElse(null);
 
         if (accessTokenFound == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token does not exist in data base");
         }
 
-        // robię update Access Tokenu  w bazie danych
+        // robię update Access Tokena w bazie danych
         accessTokenFound.setRevoked(true);
         accessTokensAccessService.update(accessTokenFound);
 
         // pobieram z bazy danych refreshTokens i szukam posiadającego accessTokenID przekazanego w params 'accessToken'
         List<RefreshToken> refreshTokens = refreshTokensAccessService.readAll();
-        RefreshToken refreshTokenFound = refreshTokens.stream()
-                .filter(rt -> (accessTokenFound.getAccessTokenId().equals(rt.getAccessToken().getAccessTokenId())))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Refresh Token with " + accessTokenFound.getAccessTokenId() + " does not exist (while RevokeToken)"));
+        RefreshToken refreshTokenFound = refreshTokens.stream().filter(rt -> (accessTokenFound.getAccessTokenId().equals(rt.getAccessToken().getAccessTokenId()))).findFirst().orElseThrow(() -> new IllegalStateException("Refresh Token with " + accessTokenFound.getAccessTokenId() + " does not exist (while RevokeToken)"));
 
         if (refreshTokenFound == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh Token associated with the provided token does not exist in data base");
         }
 
-        // robię update Refresh Tokenu  w bazie danych
+        // robię update Refresh Tokena w bazie danych
         refreshTokenFound.setRevoked(true);
         refreshTokensAccessService.update(refreshTokenFound);
 

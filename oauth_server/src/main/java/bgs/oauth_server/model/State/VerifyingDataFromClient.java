@@ -33,7 +33,7 @@ public class VerifyingDataFromClient implements State {
     private Failure failure;
 
     @Override
-    public Response handle(Map<String, String> params) throws Exception {
+    public Response handle(Map<String, String> params) {
         String nextState;
 
         System.out.println("VerifyingDataFromClient");

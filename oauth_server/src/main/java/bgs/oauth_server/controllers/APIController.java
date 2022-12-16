@@ -12,7 +12,6 @@ import org.springframework.web.context.request.*;
 import org.springframework.web.server.*;
 
 import javax.servlet.http.*;
-import java.sql.*;
 import java.util.*;
 
 
@@ -60,76 +59,91 @@ public class APIController {
     }
 
     @GetMapping(value = "/createToken", params = "authCode")
-    public @ResponseBody String createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws Exception {
+    public @ResponseBody ResponseEntity<String> createToken(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) {
 
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("code", authCode);
 
-        Response response = authenticatingClient.handle(params);
-        view.createToken(response, httpServletResponse, clientID);
-        return "Token was created successfully";
+        try {
+            Response response = authenticatingClient.handle(params);
+            view.createToken(response, httpServletResponse, clientID);
+            return new ResponseEntity<>("Token was created successfully", HttpStatus.OK);
+        } catch (ResponseStatusException rse) {
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+        }
     }
 
     @GetMapping("/createToken")
-    public @ResponseBody String createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws Exception {
+    public @ResponseBody ResponseEntity<String> createTokenFromCookie(@RequestParam String clientID, HttpServletResponse httpServletResponse) {
         String authCode = "";
         try {
             authCode = checkAuthCodeCookie.check();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (ResponseStatusException responseStatusException) {
-            if (responseStatusException.getStatus() == HttpStatus.UNAUTHORIZED) {
-                System.out.println("AuthCode cookie is not set (createTokenFromCookie)");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AuthCode cookie is not set");
-            }
+        } catch (ResponseStatusException rse) {
+            System.out.println("AuthCode cookie is not set (createTokenFromCookie)");
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
         }
         return createToken(clientID, authCode, httpServletResponse);
     }
 
     @GetMapping("/refreshToken")
-    public @ResponseBody ResponseEntity<String> refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws Exception {
+    public @ResponseBody ResponseEntity<String> refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) {
 
         // autoryzacja
         if (!authorization.authorizeOnClientID(clientID)) {
             return new ResponseEntity<>("Authorization failed", HttpStatus.UNAUTHORIZED);
         }
 
+        // setting params
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("refreshToken", refreshToken);
-//        context.changeState(new AuthenticatingClient());
-        Response response = authenticatingClient.handle(params);
-        view.refreshToken(response, httpServletResponse, clientID);
-        return new ResponseEntity<>("Token was refreshed successfully", HttpStatus.OK);
+
+        // refreshing token
+        try {
+            Response response = authenticatingClient.handle(params);
+            view.refreshToken(response, httpServletResponse, clientID);
+            return new ResponseEntity<>("Token was refreshed successfully", HttpStatus.OK);
+        } catch (ResponseStatusException rse) {
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+        }
     }
 
     @GetMapping("/revokeToken")
-    public @ResponseBody ResponseEntity<String> revokeToken(@RequestParam String clientID, @RequestParam String accessToken) throws SQLException {
+    public @ResponseBody ResponseEntity<String> revokeToken(@RequestParam String clientID, @RequestParam String accessToken) {
 
         // autoryzacja
         if (!authorization.authorizeOnClientID(clientID)) {
             return new ResponseEntity<>("Authorization failed - cannot revoke token", HttpStatus.UNAUTHORIZED);
         }
 
-        boolean response = revokeToken.revokeToken(Integer.parseInt(clientID), accessToken);
-        System.out.println(response);
+        // revoking token
+        try {
+            boolean response = revokeToken.revokeToken(Integer.parseInt(clientID), accessToken);
+            System.out.println(response);
 
-        /* funkcja zwraca true gdy udało się zrobić revoke
-           w przeciwnym przypadku wyrzuca Bad Request / IllegalStateException
-         */
-
-        return new ResponseEntity<>(view.revokeToken(response), HttpStatus.OK);
+            /* funkcja zwraca true gdy udało się zrobić revoke
+               w przeciwnym przypadku wyrzuca Bad Request / IllegalStateException
+             */
+            return new ResponseEntity<>(view.revokeToken(response), HttpStatus.OK);
+        } catch (ResponseStatusException rse) {
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+        }
     }
 
     @GetMapping("/revokeAllTokens")
-    public @ResponseBody ResponseEntity<String> revokeAllTokens(@RequestParam String clientID) throws SQLException {
+    public @ResponseBody ResponseEntity<String> revokeAllTokens(@RequestParam String clientID) {
 
         // autoryzacja
         if (!authorization.authorizeOnClientID(clientID)) {
             return new ResponseEntity<>("Authorization failed - cannot revoke all tokens", HttpStatus.UNAUTHORIZED);
         }
 
+        // revoking all tokens
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
@@ -137,7 +151,14 @@ public class APIController {
                 if (cookie.getName().startsWith("AccessToken")) {
                     var accessToken = cookie.getValue();
                     var clientIDForAccessToken = logInUser.getClientID(accessToken);
-                    revokeToken.revokeToken(Integer.parseInt(clientIDForAccessToken), accessToken);
+
+                    // revoking token
+                    try {
+                        revokeToken.revokeToken(Integer.parseInt(clientIDForAccessToken), accessToken);
+                    } catch (ResponseStatusException rse) {
+                        rse.printStackTrace();
+                        return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+                    }
                 }
             }
         }
@@ -174,14 +195,19 @@ public class APIController {
             return new ResponseEntity<>("User is unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
-        /* funkcja zwraca JSONObject gdy accessToken jest valid
-           przykład: {"user_email":"slepianka@wp.pl2","user_username":"slepianka2"}
-           scopes muszą być zdefiniowane w bazie: user_birthdate, user_email, user_firstname, user_phonenumber, user_surname, user_username
-           w przeciwnym przypadku wyrzuca Bad Request
-         */
-        JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
-        System.out.println("User data (clientID=" + clientID + "): " + userData);
-
-        return new ResponseEntity<>(userData.toString(), HttpStatus.OK);
+        // getting user data
+        try {
+            JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
+            System.out.println("User data (clientID=" + clientID + "): " + userData);
+            /* funkcja zwraca JSONObject gdy accessToken jest valid
+               przykład: {"user_email":"slepianka@wp.pl2","user_username":"slepianka2"}
+               scopes muszą być zdefiniowane w bazie: user_birthdate, user_email, user_firstname, user_phonenumber, user_surname, user_username
+               w przeciwnym przypadku wyrzuca Bad Request
+             */
+            return new ResponseEntity<>(userData.toString(), HttpStatus.OK);
+        } catch (ResponseStatusException rse) {
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+        }
     }
 }

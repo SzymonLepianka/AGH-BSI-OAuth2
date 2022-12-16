@@ -7,16 +7,15 @@ import org.springframework.web.server.*;
 import org.springframework.web.util.*;
 
 import javax.servlet.http.*;
-import java.sql.*;
 
 @Service("CheckAuthCodeCookie")
 public class CheckAuthCodeCookie {
 
-    public String check() throws ResponseStatusException, SQLException {
+    public String check() throws ResponseStatusException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var authCodeCookie = WebUtils.getCookie(request, "AuthCode");
         if (authCodeCookie == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "AuthCode Cookie is not set");
         } else {
             return authCodeCookie.getValue();
         }

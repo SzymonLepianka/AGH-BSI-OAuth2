@@ -29,7 +29,7 @@ public class CreatingAccessToken implements State {
     private CreatingRefreshToken creatingRefreshToken;
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params)   {
 
         System.out.println("CreatingAccessToken");
 

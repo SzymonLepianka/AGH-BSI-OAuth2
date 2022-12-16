@@ -25,7 +25,7 @@ public class CreatingRefreshToken implements State {
     private RedirectingToAppRedirectURL redirectingToAppRedirectURL;
 
     @Override
-    public Response handle(Map<String, String> params) throws SQLException {
+    public Response handle(Map<String, String> params) {
 
         System.out.println("CreatingRefreshToken");
 
@@ -41,10 +41,7 @@ public class CreatingRefreshToken implements State {
 
         // odczytuję stworzony w CreatingAccessToken accessToken
         List<AccessToken> accessTokenList = accessTokensAccessService.readAll();
-        AccessToken accessToken = accessTokenList.stream()
-                .filter(at -> expiresAt.equals(at.getExpiresAt()) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes()))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token with expiresAt=" + expiresAt + " does not exists (while CreatingRefreshToken)"));
+        AccessToken accessToken = accessTokenList.stream().filter(at -> expiresAt.equals(at.getExpiresAt()) && clientID.equals(at.getClientApp().getClientAppId()) && scopes.equals(at.getScopes())).findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token with expiresAt=" + expiresAt + " does not exists (while CreatingRefreshToken)"));
 
         // tworzę obiekt refreshToken - zapisuję do niego parametry i zapisuję do bazy danych
         RefreshToken refreshToken = new RefreshToken();
