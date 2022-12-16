@@ -29,7 +29,7 @@ public class TestAPIController {
     private Authorization authorization;
 
     @GetMapping("/users")
-    public @ResponseBody String getAllUsers() throws SQLException {
+    public @ResponseBody String getAllUsers() {
         StringBuilder sb = new StringBuilder();
         List<User> users = usersAccessService.readAll();
         for (var user : users) {
@@ -39,7 +39,7 @@ public class TestAPIController {
     }
 
     @GetMapping("/users/add")
-    public @ResponseBody String addUser(@RequestParam String birth_date, @RequestParam String email, @RequestParam String first_name, @RequestParam Boolean is_developer, @RequestParam String password, @RequestParam String phone_number, @RequestParam String surname, @RequestParam String username) throws SQLException {
+    public @ResponseBody String addUser(@RequestParam String birth_date, @RequestParam String email, @RequestParam String first_name, @RequestParam Boolean is_developer, @RequestParam String password, @RequestParam String phone_number, @RequestParam String surname, @RequestParam String username) {
         User newUser = new User();
         Date birthDateSQL = Date.valueOf(birth_date);
         newUser.setBirthDate(birthDateSQL);
@@ -55,7 +55,7 @@ public class TestAPIController {
     }
 
     @GetMapping("/clients")
-    public @ResponseBody String getAllApps() throws SQLException {
+    public @ResponseBody String getAllApps() {
         StringBuilder sb = new StringBuilder();
         List<ClientApp> clientAppList = appsAccessService.readAll();
         for (var clientApp : clientAppList) {
@@ -65,7 +65,7 @@ public class TestAPIController {
     }
 
     @GetMapping("/clients/add")
-    public @ResponseBody String addClient() throws SQLException {
+    public @ResponseBody String addClient() {
         ClientApp clientApp = new ClientApp();
         User user = usersAccessService.readById(2);
         clientApp.setUser(user);
@@ -76,7 +76,7 @@ public class TestAPIController {
     }
 
     @GetMapping("/authorizationTest")
-    public @ResponseBody String authorizationTest() throws SQLException {
+    public @ResponseBody String authorizationTest() {
         try {
             authorization.authorizeOnCookie();
         } catch (ResponseStatusException exception) {

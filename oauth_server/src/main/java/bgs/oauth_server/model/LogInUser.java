@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
-import java.sql.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -46,7 +45,7 @@ public class LogInUser {
         return split[0].substring(12);
     }
 
-    private Integer getUserIDFromToken(String accessToken) throws SQLException {
+    private Integer getUserIDFromToken(String accessToken) {
         Integer clientIDFromToken = Integer.parseInt(getClientID(accessToken));
 
         // czytam z danych danych appSecret clienta z danym clientID
@@ -60,7 +59,7 @@ public class LogInUser {
     }
 
 
-    public Response handle(String accessToken, String clientID, PasswordEncoder passwordEncoder) throws Exception {
+    public Response handle(String accessToken, String clientID) {
         Integer userID = getUserIDFromToken(accessToken);
 
         var users = usersAccessService.readAll();
@@ -70,10 +69,7 @@ public class LogInUser {
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
-        List<Permission> userPermissionForApp = allPermission.stream()
-                .filter(x -> x.getUser().getUserId().equals(user.get().getUserId())
-                        && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID))
-                .collect(Collectors.toList());
+        List<Permission> userPermissionForApp = allPermission.stream().filter(x -> x.getUser().getUserId().equals(user.get().getUserId()) && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID)).collect(Collectors.toList());
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {
@@ -98,7 +94,7 @@ public class LogInUser {
         return authenticatingClient.handle(params);
     }
 
-    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) throws Exception {
+    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) {
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
         if (user.isEmpty()) {
@@ -111,10 +107,7 @@ public class LogInUser {
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
-        var userPermissionForApp = allPermission.stream()
-                .filter(x -> x.getUser().getUserId().equals(user.get().getUserId())
-                        && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID))
-                .collect(Collectors.toList());
+        var userPermissionForApp = allPermission.stream().filter(x -> x.getUser().getUserId().equals(user.get().getUserId()) && String.valueOf(x.getClientApp().getClientAppId()).equals(clientID)).collect(Collectors.toList());
 
         // Add all permissions for user, if user doesn't have any
         if (userPermissionForApp.isEmpty()) {

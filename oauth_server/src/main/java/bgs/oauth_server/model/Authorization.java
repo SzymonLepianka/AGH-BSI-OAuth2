@@ -1,13 +1,11 @@
 package bgs.oauth_server.model;
 
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.context.request.*;
 import org.springframework.web.server.*;
 
 import javax.servlet.http.*;
-import java.sql.*;
 
 @Service("Authorization")
 public class Authorization {
@@ -15,24 +13,24 @@ public class Authorization {
     @Autowired
     private ValidateToken validateToken;
 
-    public void authorizeOnCookie() throws ResponseStatusException, SQLException {
+    public boolean authorizeOnCookie() throws ResponseStatusException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
             for (var cookie : cookies) {
                 if (cookie.getName().startsWith("AccessToken")) {
                     if (validateToken.validateToken(cookie.getValue())) {
-                        return;
+                        return true;
                     } else {
                         System.out.println("Walidacja nie przeszła");
                     }
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        return false;
     }
 
-    public boolean authorizeOnClientID(String clientID) {
+    public boolean authorizeOnClientID(String clientID) throws ResponseStatusException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
@@ -47,7 +45,7 @@ public class Authorization {
         return false;
     }
 
-    public boolean authorizeOnClientIDAndAccessToken(String accessToken) {
+    public boolean authorizeOnClientIDAndAccessToken(String accessToken) throws ResponseStatusException {
         return validateToken.validateToken(accessToken);
     }
 }
