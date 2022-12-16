@@ -64,7 +64,6 @@ public class CreatingRefreshToken implements State {
         params.put("createdRefreshToken", createdRefreshToken);
 
         // zmieniam stan na RedirectingToAppRedirectURL
-//        context.changeState(new RedirectingToAppRedirectURL());
         return redirectingToAppRedirectURL.handle(params);
     }
 

@@ -59,7 +59,5 @@ public class GetUserData {
         }
         // Zwraca JSONObject
         return userData;
-
     }
-
 }

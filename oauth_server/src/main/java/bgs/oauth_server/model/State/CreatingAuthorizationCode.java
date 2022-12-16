@@ -10,7 +10,6 @@ import org.springframework.web.server.*;
 
 import java.security.*;
 import java.sql.Timestamp;
-import java.sql.*;
 import java.time.*;
 import java.util.*;
 
@@ -32,7 +31,7 @@ public class CreatingAuthorizationCode implements State {
 
 
     @Override
-    public Response handle(Map<String, String> params)   {
+    public Response handle(Map<String, String> params) {
 
         System.out.println("CreatingAuthorizationCode");
 
@@ -48,7 +47,7 @@ public class CreatingAuthorizationCode implements State {
         User user1 = users.stream()
                 .filter(x -> username.equals(x.getUsername()))
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student " + username + " does not exists (while creating auth code)"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User " + username + " does not exists (while creating auth code)"));
 
         // tworzę treść AuthCode - ciąg losowych znaków o zadanej długości codeLength
         int codeLength = 10;
@@ -69,9 +68,6 @@ public class CreatingAuthorizationCode implements State {
 
         // zapisuję stworzony obiekt authCode do bazy danych
         authCodesAccessService.create(authCode);
-
-        //zmieniam stan na RedirectingToAppRedirectURL (tam wyślę code do klienta)
-//        context.changeState(new RedirectingToAppRedirectURL());
 
         ///////////////////////
         //PERMISSIONS i SCOPE//
@@ -129,6 +125,7 @@ public class CreatingAuthorizationCode implements State {
         // dopisuję 'code' (content) do params
         params.put("code", authCode.getContent());
 
+        //zmieniam stan na RedirectingToAppRedirectURL (tam wyślę code do klienta)
         return redirectingToAppRedirectURL.handle(params);
     }
 

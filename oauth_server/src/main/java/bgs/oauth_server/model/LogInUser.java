@@ -65,7 +65,6 @@ public class LogInUser {
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUserId() == userID).findFirst();
 
-//        var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();
@@ -103,7 +102,6 @@ public class LogInUser {
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is incorrect (LogInUser)");
         }
-//        var context = new Context();
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
         var allPermission = permissionsAccessService.readAll();

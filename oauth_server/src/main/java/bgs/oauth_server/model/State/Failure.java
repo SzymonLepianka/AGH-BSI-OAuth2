@@ -12,7 +12,6 @@ public class Failure implements State {
     @Override
     public Response handle(Map<String, String> params) throws ResponseStatusException {
         System.out.println("Failure");
-
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Other failure (Failure)");
     }
 
