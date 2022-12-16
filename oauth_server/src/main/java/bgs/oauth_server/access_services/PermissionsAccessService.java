@@ -34,14 +34,14 @@ public class PermissionsAccessService {
         return permission;
     }
 
-    public List<Permission> readAll() throws SQLException {
+    public List<Permission> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "SELECT * FROM oauth.permissions";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createPermissionFromResult(resultSet));
     }
 
 
-    public Permission readById(Integer id) throws SQLException {
+    public Permission readById(Integer id) {
 
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("permission_id", id);
@@ -55,7 +55,7 @@ public class PermissionsAccessService {
     }
 
 
-    public Permission create(Permission object) throws SQLException {
+    public Permission create(Permission object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("scope_id", object.getScope().getScopeId());
@@ -65,7 +65,7 @@ public class PermissionsAccessService {
         return object;
     }
 
-    public Permission update(Permission object) throws SQLException {
+    public Permission update(Permission object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("client_app_id", object.getClientApp().getClientAppId());
         parameters.addValue("scope_id", object.getScope().getScopeId());
@@ -76,7 +76,7 @@ public class PermissionsAccessService {
         return object;
     }
 
-    public void remove(Permission object) throws SQLException {
+    public void remove(Permission object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("permission_id", object.getPermissionId());
         final String sql = "DELETE FROM oauth.permissions WHERE permission_id = :permission_id";

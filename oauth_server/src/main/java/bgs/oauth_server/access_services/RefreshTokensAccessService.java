@@ -28,13 +28,13 @@ public class RefreshTokensAccessService {
         return refreshToken;
     }
 
-    public List<RefreshToken> readAll() throws SQLException {
+    public List<RefreshToken> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "select * from oauth.refresh_tokens";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createRefreshTokenFromResult(resultSet));
     }
 
-    public RefreshToken readById(Integer id) throws SQLException {
+    public RefreshToken readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("refresh_token_id", id);
         final String sql = "select * from oauth.refresh_tokens where refresh_token_id=:refresh_token_id";
@@ -46,7 +46,7 @@ public class RefreshTokensAccessService {
         }
     }
 
-    public RefreshToken create(RefreshToken object) throws SQLException {
+    public RefreshToken create(RefreshToken object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
@@ -56,7 +56,7 @@ public class RefreshTokensAccessService {
         return object;
     }
 
-    public RefreshToken update(RefreshToken object) throws SQLException {
+    public RefreshToken update(RefreshToken object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
@@ -67,7 +67,7 @@ public class RefreshTokensAccessService {
         return object;
     }
 
-    public void remove(RefreshToken object) throws SQLException {
+    public void remove(RefreshToken object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("refresh_token_id", object.getRefreshTokenId());
         final String sql = "DELETE FROM oauth.refresh_tokens WHERE refresh_token_id = :refresh_token_id";

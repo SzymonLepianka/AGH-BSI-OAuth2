@@ -22,13 +22,13 @@ public class ScopesAccessService {
         return scope;
     }
 
-    public List<Scope> readAll() throws SQLException {
+    public List<Scope> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "SELECT * FROM oauth.scopes";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createScopeFromResult(resultSet));
     }
 
-    public Scope readById(Integer id) throws SQLException {
+    public Scope readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("scope_id", id);
         final String sql = "SELECT * FROM oauth.scopes WHERE scope_id = :scope_id";
@@ -40,7 +40,7 @@ public class ScopesAccessService {
         }
     }
 
-    public Scope create(Scope object) throws SQLException {
+    public Scope create(Scope object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("name", object.getName());
         final String sql = "INSERT INTO oauth.scopes (name) values (:name)";
@@ -48,7 +48,7 @@ public class ScopesAccessService {
         return object;
     }
 
-    public Scope update(Scope object) throws SQLException {
+    public Scope update(Scope object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("name", object.getName());
         parameters.addValue("scope_id", object.getScopeId());
@@ -57,7 +57,7 @@ public class ScopesAccessService {
         return object;
     }
 
-    public void remove(Scope object) throws SQLException {
+    public void remove(Scope object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("scope_id", object.getScopeId());
         final String sql = "DELETE FROM oauth.scopes WHERE scope_id = :scope_id";

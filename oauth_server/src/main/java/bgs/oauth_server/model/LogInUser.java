@@ -30,7 +30,7 @@ public class LogInUser {
     @Autowired
     private AuthenticatingClient authenticatingClient;
 
-    private String getClientID(String accessToken) {
+    public String getClientID(String accessToken) {
 
         String[] split_string = accessToken.split("\\.");
         String base64EncodedBody = split_string[1];

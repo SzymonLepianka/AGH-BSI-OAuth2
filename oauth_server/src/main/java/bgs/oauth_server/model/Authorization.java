@@ -32,19 +32,19 @@ public class Authorization {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
-    public void authorizeOnClientID(String clientID) throws ResponseStatusException, SQLException {
+    public boolean authorizeOnClientID(String clientID) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
             for (var cookie : cookies) {
                 if (cookie.getName().equals("AccessToken" + clientID)) {
                     if (validateToken.validateToken(cookie.getValue())) {
-                        return;
+                        return true;
                     }
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        return false;
     }
 
     public boolean authorizeOnClientIDAndAccessToken(String accessToken) {

@@ -32,14 +32,13 @@ public class AuthCodesAccessService {
         return authCode;
     }
 
-    public List<AuthCode> readAll() throws SQLException {
+    public List<AuthCode> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-        final String sql = "select * FROM oauth." +
-                "auth_codes";
+        final String sql = "select * FROM oauth.auth_codes";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAuthCodeFromResult(resultSet));
     }
 
-    public AuthCode readById(Integer id) throws SQLException {
+    public AuthCode readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("auth_code_id", id);
         final String sql = "SELECT * from oauth.auth_codes where auth_code_id=:auth_code_id";
@@ -51,7 +50,7 @@ public class AuthCodesAccessService {
         }
     }
 
-    public AuthCode create(AuthCode object) throws SQLException {
+    public AuthCode create(AuthCode object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
@@ -63,7 +62,7 @@ public class AuthCodesAccessService {
         return object;
     }
 
-    public AuthCode update(AuthCode object) throws SQLException {
+    public AuthCode update(AuthCode object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("expires_at", object.getExpiresAt());
         parameters.addValue("revoked", object.isRevoked());
@@ -76,7 +75,7 @@ public class AuthCodesAccessService {
         return object;
     }
 
-    public void remove(AuthCode object) throws SQLException {
+    public void remove(AuthCode object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("auth_code_id", object.getAuthCodeId());
         final String sql = "DELETE FROM oauth.auth_codes WHERE auth_code_id = :auth_code_id";

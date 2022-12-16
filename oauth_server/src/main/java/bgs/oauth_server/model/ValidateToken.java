@@ -23,7 +23,7 @@ public class ValidateToken {
     @Autowired
     private AppsAccessService appsAccessService;
 
-    public boolean validateToken(String accessToken) {
+    public boolean validateToken(String accessToken) throws ResponseStatusException {
         Integer clientID = getClientID(accessToken);
 
         // czytam z danych danych appSecret clienta z danym clientID
@@ -60,15 +60,13 @@ public class ValidateToken {
 
         // sprawdzam czy token nie jest revoked
         if (accessTokenFound != null) {
-            {
-                return !accessTokenFound.isRevoked();
-            }
+            return !accessTokenFound.isRevoked();
         } else {
             return false;
         }
     }
 
-    private Integer getClientID(String accessToken) {
+    private Integer getClientID(String accessToken) throws ResponseStatusException {
 
         String[] split_string = accessToken.split("\\.");
         String base64EncodedBody = split_string[1];
@@ -81,17 +79,6 @@ public class ValidateToken {
         if (!split[0].startsWith("clientID", 2)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token should have 'clientID' instead of " + split[0].substring(2, 10));
         }
-
-// KODZIK dający expiresAt
-//        if (split[2].startsWith("exp", 1)){
-//            long expiresAt = Long.parseLong(split[2].substring(6));
-//            System.out.println(expiresAt);
-//            // System.currentTimeMillis() / 1000L - obecny czas (ilość sekund od 1970 roku)
-//        }
-//        else{
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Token should have 'exp' instead of " + split[2].substring(1,4));
-//        }
-
         return Integer.parseInt(split[0].substring(12));
     }
 }
