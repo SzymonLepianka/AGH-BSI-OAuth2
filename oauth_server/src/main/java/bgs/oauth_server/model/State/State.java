@@ -1,6 +1,5 @@
 package bgs.oauth_server.model.State;
 
-import java.sql.*;
 import java.util.*;
 
 public interface State {

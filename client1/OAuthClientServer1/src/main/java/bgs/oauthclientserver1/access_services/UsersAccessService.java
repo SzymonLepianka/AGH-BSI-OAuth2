@@ -56,9 +56,8 @@ public class UsersAccessService {
         return object;
     }
 
-    public User updateOnUsername(User object) {
+    public void updateOnUsername(User object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
-//        parameters.addValue("user_id", object.getUserId());
         parameters.addValue("birth_date", object.getBirthDate());
         parameters.addValue("email", object.getEmail());
         parameters.addValue("first_name", object.getFirstName());
@@ -66,7 +65,6 @@ public class UsersAccessService {
         parameters.addValue("username", object.getUsername());
         final String sql = "update oauth.users set birth_date = :birth_date, email = :email, first_name = :first_name, surname = :surname where username = :username";
         namedJdbcTemplate.update(sql, parameters);
-        return object;
     }
 
     public void remove(User object) {

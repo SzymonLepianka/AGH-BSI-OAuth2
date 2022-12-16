@@ -9,7 +9,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.server.*;
 
-import java.io.*;
 import java.net.HttpCookie;
 import java.net.*;
 import java.net.http.HttpRequest;
@@ -25,8 +24,7 @@ public class GetUserData {
     @Autowired
     private GetScopes getScopes;
 
-    public User getUserData(String accessToken) throws IOException, InterruptedException, ParseException {
-
+    public User getUserData(String accessToken) {
         List<User> allUsersFromDataBase = usersAccessService.readAll();
         List<String> scopesFromAccessToken = getScopes.getScopes(accessToken);
         String url = "http://localhost:8080/api/getUserData?clientID=2&accessToken=" + accessToken;
@@ -38,7 +36,13 @@ public class GetUserData {
         HttpCookie accessToken2Cookie = new HttpCookie("AccessToken2", accessToken);
         accessToken2Cookie.setPath("/");
         cookieStore.add(URI.create(url), accessToken2Cookie);
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
 
         if (response.statusCode() != 200) {
             throw new ResponseStatusException(Objects.requireNonNull(HttpStatus.resolve(response.statusCode())), "Bad response status from oauth_server - " + response.body());
@@ -63,7 +67,11 @@ public class GetUserData {
             user_surname = (String) jsonObject1.get("user_surname");
         }
         if (scopesFromAccessToken.contains("user_birthdate")) {
-            user_birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(jsonObject1.get("user_birthdate").toString());
+            try {
+                user_birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(jsonObject1.get("user_birthdate").toString());
+            } catch (ParseException pe) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getMessage());
+            }
         }
         User user = new User();
         user.setEmail(user_email);

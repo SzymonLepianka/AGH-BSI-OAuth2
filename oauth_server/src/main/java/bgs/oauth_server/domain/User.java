@@ -1,6 +1,6 @@
 package bgs.oauth_server.domain;
 
-import java.sql.Date;
+import java.sql.*;
 
 public class User {
     private Integer userId;

@@ -20,7 +20,7 @@ import java.util.*;
 @Service("Authorization")
 public class Authorization {
 
-    public String authorizeOnUsername(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
+    public String authorizeOnUsername(String username) throws ResponseStatusException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -44,14 +44,14 @@ public class Authorization {
             if (claims.getExpiration().before(Date.from(Instant.now()))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
             }
-            if (!validateToken(accessToken, httpServletResponse)){
+            if (!validateToken(accessToken)){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is invalid, after checking with oauth server");
             }
         }
         return accessTokenCookie.getValue();
     }
 
-    public String authorize(HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
+    public String authorize() throws ResponseStatusException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -68,14 +68,10 @@ public class Authorization {
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, accessToken is invalid");
             }
-//            String username1 = (String) claims.get("username");
-//            if (!username1.equals(username)) {
-//                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username does not match");
-//            }
             if (claims.getExpiration().before(Date.from(Instant.now()))) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
             }
-            if (!validateToken(accessToken, httpServletResponse)){
+            if (!validateToken(accessToken)){
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is invalid, after checking with oauth server");
             }
         }
@@ -83,16 +79,16 @@ public class Authorization {
     }
 
 
-    private boolean validateToken(String accessToken, HttpServletResponse httpServletResponse) throws ResponseStatusException, IOException, InterruptedException {
-
+    private boolean validateToken(String accessToken) throws ResponseStatusException {
         String url = "http://localhost:8080/api/validateToken?clientID=2&accessToken=" + accessToken;
-        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-//        cookieHelper.setCookie(url, "AccessToken", accessToken);
         HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
-//        CookieStore cookieStore = ((CookieManager) (client.cookieHandler().get())).getCookieStore();
-//        cookieStore.add(URI.create(url), new HttpCookie("AccessToken", accessToken));
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body().equals("Access Token is valid");
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body().equals("Access Token is valid");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }

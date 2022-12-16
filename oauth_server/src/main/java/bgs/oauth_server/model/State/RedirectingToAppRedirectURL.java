@@ -5,7 +5,6 @@ import bgs.oauth_server.domain.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
-import java.sql.*;
 import java.util.*;
 
 @Service("RedirectingToAppRedirectURL")
@@ -20,7 +19,7 @@ public class RedirectingToAppRedirectURL implements State {
 
 
     @Override
-    public Response handle(Map<String, String> params)   {
+    public Response handle(Map<String, String> params) {
 
         System.out.println("RedirectingToAppRedirectURL");
 
@@ -54,12 +53,11 @@ public class RedirectingToAppRedirectURL implements State {
             ArrayList<String> response = new ArrayList<>();
             response.add(createdAccessToken);
             response.add(createdRefreshToken);
-            // zwracam obiekt Response z pobranym redirectURL i accesstoken+refreshtoken
+            // zwracam obiekt Response z pobranym redirectURL i AccessToken+RefreshToken
             return new Response(redirectURL, response);
         }
 
-        // gdy nic się nie dopasowało zmienam stan na failure
-//        context.changeState(new Failure());
+        // gdy nic się nie dopasowało zmieniam stan na failure
         return failure.handle(params);
     }
 

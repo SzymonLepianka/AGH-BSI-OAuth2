@@ -29,7 +29,7 @@ public class CreatingAccessToken implements State {
     private CreatingRefreshToken creatingRefreshToken;
 
     @Override
-    public Response handle(Map<String, String> params)   {
+    public Response handle(Map<String, String> params) {
 
         System.out.println("CreatingAccessToken");
 
@@ -124,7 +124,6 @@ public class CreatingAccessToken implements State {
         params.put("createdAccessToken", createdAccessToken);
 
         // zmieniam stan na CreatingRefreshToken
-//        context.changeState(new CreatingRefreshToken());
         return creatingRefreshToken.handle(params);
     }
 
