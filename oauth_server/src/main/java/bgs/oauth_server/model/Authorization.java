@@ -15,7 +15,7 @@ public class Authorization {
     @Autowired
     private ValidateToken validateToken;
 
-    public void authorize() throws ResponseStatusException, SQLException {
+    public void authorizeOnCookie() throws ResponseStatusException, SQLException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
@@ -32,7 +32,7 @@ public class Authorization {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
-    public void authorize(String clientID) throws ResponseStatusException, SQLException {
+    public void authorizeOnClientID(String clientID) throws ResponseStatusException, SQLException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var cookies = request.getCookies();
         if (cookies != null) {
@@ -47,10 +47,7 @@ public class Authorization {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
-    public void authorize(String clientID, String accessToken) throws ResponseStatusException, SQLException {
-        if (validateToken.validateToken(accessToken)) {
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+    public boolean authorizeOnClientIDAndAccessToken(String accessToken) {
+        return validateToken.validateToken(accessToken);
     }
 }

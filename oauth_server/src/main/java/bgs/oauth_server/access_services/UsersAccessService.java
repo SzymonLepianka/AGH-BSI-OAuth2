@@ -29,13 +29,13 @@ public class UsersAccessService {
         return user;
     }
 
-    public List<User> readAll() throws SQLException {
+    public List<User> readAll()   {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "select * from oauth.users";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createUserFromResult(resultSet));
     }
 
-    public User readById(Integer id) throws SQLException {
+    public User readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", id);
         final String sql = "select * from oauth.users where user_id=:user_id";
@@ -47,7 +47,7 @@ public class UsersAccessService {
         }
     }
 
-    public User create(User object) throws SQLException {
+    public User create(User object)   {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("birth_date", object.getBirthDate());
         parameters.addValue("email", object.getEmail());
@@ -62,7 +62,7 @@ public class UsersAccessService {
         return object;
     }
 
-    public User update(User object) throws SQLException {
+    public User update(User object)   {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", object.getUserId());
         parameters.addValue("birth_date", object.getBirthDate());
@@ -78,7 +78,7 @@ public class UsersAccessService {
         return object;
     }
 
-    public void remove(User object) throws SQLException {
+    public void remove(User object)   {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("user_id", object.getUserId());
         final String sql = "DELETE FROM oauth.users WHERE user_id = :user_id";

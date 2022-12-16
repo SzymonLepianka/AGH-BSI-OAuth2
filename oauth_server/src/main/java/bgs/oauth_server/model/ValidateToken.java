@@ -23,7 +23,7 @@ public class ValidateToken {
     @Autowired
     private AppsAccessService appsAccessService;
 
-    public boolean validateToken(String accessToken) throws SQLException {
+    public boolean validateToken(String accessToken) {
         Integer clientID = getClientID(accessToken);
 
         // czytam z danych danych appSecret clienta z danym clientID

@@ -21,7 +21,7 @@ public class GetUserData {
     @Autowired
     private UsersAccessService usersAccessService;
 
-    public JSONObject getUserData(Integer clientID, String accessToken) throws SQLException {
+    public JSONObject getUserData(Integer clientID, String accessToken)  {
 
         // tworzę JSONObject (zostanie zwrócony)
         JSONObject userData = new JSONObject();

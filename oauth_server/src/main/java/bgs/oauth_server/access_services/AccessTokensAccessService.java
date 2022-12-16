@@ -34,13 +34,13 @@ public class AccessTokensAccessService {
         return accessToken;
     }
 
-    public List<AccessToken> readAll() throws SQLException {
+    public List<AccessToken> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "select * from oauth.access_tokens";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createAccessTokenFromResult(resultSet));
     }
 
-    public AccessToken readById(Integer id) throws SQLException {
+    public AccessToken readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("access_token_id", id);
         final String sql = "select * from oauth.access_tokens where access_token_id=:access_token_id";
@@ -52,7 +52,7 @@ public class AccessTokensAccessService {
         }
     }
 
-    public AccessToken create(AccessToken object) throws SQLException {
+    public AccessToken create(AccessToken object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("created_at", object.getCreatedAt());
         parameters.addValue("expires_at", object.getExpiresAt());

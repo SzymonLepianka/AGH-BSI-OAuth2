@@ -2,7 +2,6 @@ package bgs.oauth_server.controllers;
 
 import bgs.oauth_server.domain.*;
 import bgs.oauth_server.model.*;
-import bgs.oauth_server.view.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.*;
@@ -53,7 +52,7 @@ public class WebController {
         model.addAttribute("clientID", clientID);
         System.out.println("kontroler: loginFormWithClientID (clientID=" + clientID + ")");
         try {
-            authorization.authorize();
+            authorization.authorizeOnCookie();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -131,7 +130,7 @@ public class WebController {
 
     @PostMapping(value = "/login")
     @ResponseBody
-    public String handleLogin(@RequestBody Map<String, String> json, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<String> handleLogin(@RequestBody Map<String, String> json, HttpServletResponse httpServletResponse) {
         String username = json.get("username");
         String password = json.get("password");
         String clientID = json.get("clientID");
@@ -147,7 +146,8 @@ public class WebController {
             httpServletResponse.addCookie(cookieAuthCode);
 
             // zamiast strony "alreadyLogged" zwraca AuthCode
-            return authCode.getContent();
+            return new ResponseEntity<>(authCode.getContent(), HttpStatus.OK);
+//            return authCode.getContent();
 //            return WebView.LoginView(modelResponse, httpServletResponse);
 
         } catch (Exception e) {

@@ -28,13 +28,13 @@ public class AppsAccessService {
         return clientApp;
     }
 
-    public List<ClientApp> readAll() throws SQLException {
+    public List<ClientApp> readAll() {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         final String sql = "select * from oauth.client_apps";
         return namedJdbcTemplate.query(sql, parameters, (resultSet, i) -> createClientAppFromResult(resultSet));
     }
 
-    public ClientApp readById(Integer id) throws SQLException {
+    public ClientApp readById(Integer id) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("client_app_id", id);
         final String sql = "select * from oauth.client_apps where client_app_id = :client_app_id";
@@ -46,7 +46,7 @@ public class AppsAccessService {
         }
     }
 
-    public ClientApp create(ClientApp object) throws SQLException {
+    public ClientApp create(ClientApp object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("app_secret", object.getAppSecret());
         parameters.addValue("redirect_url", object.getRedirectURL());
@@ -57,7 +57,7 @@ public class AppsAccessService {
         return object;
     }
 
-    public ClientApp update(ClientApp object) throws SQLException {
+    public ClientApp update(ClientApp object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("app_secret", object.getAppSecret());
         parameters.addValue("redirect_url", object.getRedirectURL());
@@ -69,7 +69,7 @@ public class AppsAccessService {
         return object;
     }
 
-    public void remove(ClientApp object) throws SQLException {
+    public void remove(ClientApp object) {
         final MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("client_app_id", object.getClientAppId());
         final String sql = "DELETE FROM oauth.client_apps WHERE client_app_id = :client_app_id";

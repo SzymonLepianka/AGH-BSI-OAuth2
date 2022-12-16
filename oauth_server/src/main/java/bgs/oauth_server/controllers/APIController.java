@@ -101,7 +101,7 @@ public class APIController {
 
     @GetMapping("/refreshToken")
     public @ResponseBody String refreshToken(@RequestParam String clientID, @RequestParam String refreshToken, HttpServletResponse httpServletResponse) throws Exception {
-        authorization.authorize(clientID);
+        authorization.authorizeOnClientID(clientID);
         Map<String, String> params = new HashMap<>();
         params.put("clientID", clientID);
         params.put("refreshToken", refreshToken);
@@ -115,7 +115,7 @@ public class APIController {
     public @ResponseBody String revokeToken(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.authorize(clientID);
+            authorization.authorizeOnClientID(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -137,7 +137,7 @@ public class APIController {
     public @ResponseBody String revokeAllTokens(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.authorize(clientID);
+            authorization.authorizeOnClientID(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -164,7 +164,7 @@ public class APIController {
     public @ResponseBody String revokeGrantType(@RequestParam String clientID, @RequestParam String authCode, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.authorize(clientID);
+            authorization.authorizeOnClientID(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -187,7 +187,7 @@ public class APIController {
     public @ResponseBody String getUserData(@RequestParam String clientID, HttpServletResponse httpServletResponse) throws SQLException {
 
         try {
-            authorization.authorize(clientID);
+            authorization.authorizeOnClientID(clientID);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (ResponseStatusException responseStatusException) {
@@ -212,27 +212,19 @@ public class APIController {
     }
 
     @GetMapping(value = "/getUserData", params = "accessToken")
-    public @ResponseBody String getUserData(@RequestParam String clientID, @RequestParam String accessToken, HttpServletResponse httpServletResponse) throws SQLException {
-
-        try {
-            authorization.authorize(clientID, accessToken);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (ResponseStatusException responseStatusException) {
-            if (responseStatusException.getStatus() == HttpStatus.UNAUTHORIZED) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot get user data");
-            }
+    public @ResponseBody ResponseEntity<String> getUserData(@RequestParam String clientID, @RequestParam String accessToken) {
+        if (!authorization.authorizeOnClientIDAndAccessToken(accessToken)) {
+            return new ResponseEntity<>("User is unauthorized", HttpStatus.UNAUTHORIZED);
         }
-
-        JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
-        System.out.println(userData);
 
         /* funkcja zwraca JSONObject gdy accessToken jest valid
            przykład: {"user_email":"slepianka@wp.pl2","user_username":"slepianka2"}
-           scopes muszą być zdefinowane w bazie: user_birthdate, user_email, user_firstname, user_phonenumber, user_surname, user_username
+           scopes muszą być zdefiniowane w bazie: user_birthdate, user_email, user_firstname, user_phonenumber, user_surname, user_username
            w przeciwnym przypadku wyrzuca Bad Request
          */
+        JSONObject userData = getUserData.getUserData(Integer.parseInt(clientID), accessToken);
+        System.out.println("User data (clientID=" + clientID + "): " + userData);
 
-        return userData.toString();
+        return new ResponseEntity<>(userData.toString(), HttpStatus.OK);
     }
 }

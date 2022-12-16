@@ -78,7 +78,7 @@ public class TestAPIController {
     @GetMapping("/authorizationTest")
     public @ResponseBody String authorizationTest() throws SQLException {
         try {
-            authorization.authorize();
+            authorization.authorizeOnCookie();
         } catch (ResponseStatusException exception) {
             if (exception.getStatus() != HttpStatus.UNAUTHORIZED) {
                 exception.printStackTrace();
