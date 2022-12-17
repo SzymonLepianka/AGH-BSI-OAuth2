@@ -7,7 +7,6 @@ export default () => {
       withCredentials: true,
     })
     .then((response) => {
-      console.log(response)
       if (response.status === 200) {
         console.log(response.data);
         return response.data;

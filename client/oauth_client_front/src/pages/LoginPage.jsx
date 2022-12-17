@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import accessTokenRequest from "../api/accessTokenRequest";
 import userDataRequest from "../api/userDataRequest";
 import { gapi } from "gapi-script";
@@ -10,6 +9,7 @@ import {
   GOOGLE_CLIENT_ID,
   OAUTH_SERVER_FRONT_URL,
 } from "../api/config";
+import { SessionContext } from "../App";
 
 export const LoginPage = () => {
   const [profile, setProfile] = useState(null);
@@ -22,7 +22,20 @@ export const LoginPage = () => {
   const [birthDate, setBirthDate] = useState("");
   const [logged, setLogged] = useState(false);
 
-  const navigate = useNavigate();
+  const [session, setSession] = useContext(SessionContext);
+
+  useEffect(() => {
+    if (session) {
+      userDataRequest().then((userData) => {
+        setEmail(userData.email);
+        setFirstName(userData.first_name);
+        setSurname(userData.surname);
+        setUsername(userData.username);
+        setBirthDate(userData.birth_date);
+        setLogged(true);
+      });
+    }
+  });
 
   useEffect(() => {
     const initClient = () => {
