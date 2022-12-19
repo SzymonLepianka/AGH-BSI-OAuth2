@@ -13,3 +13,17 @@ export const getSessionCookie = () => {
   }
   return "";
 };
+
+export const removeClientIdCookies = () => {
+  const cookieManager = new Cookies();
+  const cookies = cookieManager.getAll();
+
+  for (const cookie in cookies) {
+    if (
+      cookie === "AccessToken" + CLIENT_ID ||
+      cookie === "RefreshToken" + CLIENT_ID
+    ) {
+      cookieManager.remove(cookie);
+    }
+  }
+};

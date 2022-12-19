@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import accessTokenRequest from "../api/accessTokenRequest";
-import userDataRequest from "../api/userDataRequest";
 import { gapi } from "gapi-script";
 import GoogleLoginComponent from "../components/googleLogin";
 import GoogleLogoutComponent from "../components/googleLogout";
@@ -10,32 +9,17 @@ import {
   OAUTH_SERVER_FRONT_URL,
 } from "../api/config";
 import { SessionContext } from "../App";
+import { getSessionCookie } from "../middleware/session";
+import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
   const [profile, setProfile] = useState(null);
-
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [username, setUsername] = useState("");
-  const [birthDate, setBirthDate] = useState("");
   const [logged, setLogged] = useState(false);
 
   const [session, setSession] = useContext(SessionContext);
 
-  useEffect(() => {
-    if (session) {
-      userDataRequest().then((userData) => {
-        setEmail(userData.email);
-        setFirstName(userData.first_name);
-        setSurname(userData.surname);
-        setUsername(userData.username);
-        setBirthDate(userData.birth_date);
-        setLogged(true);
-      });
-    }
-  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initClient = () => {
@@ -45,6 +29,12 @@ export const LoginPage = () => {
       });
     };
     gapi.load("client:auth2", initClient);
+  });
+
+  useEffect(() => {
+    if (session) {
+      navigate("/");
+    }
   });
 
   const handleOauthLogin = (e) => {
@@ -59,15 +49,10 @@ export const LoginPage = () => {
         clearInterval(timer);
         accessTokenRequest()
           .then(() => {
-            userDataRequest().then((userData) => {
-              setLogged(true);
-              setError("");
-              setEmail(userData.email);
-              setFirstName(userData.first_name);
-              setSurname(userData.surname);
-              setUsername(userData.username);
-              setBirthDate(userData.birth_date);
-            });
+            setSession(getSessionCookie());
+            navigate("/");
+            setLogged(true);
+            setError("");
           })
           .catch((error) => {
             setError(error);
@@ -80,15 +65,6 @@ export const LoginPage = () => {
     <div>
       <h1>Login with OAuth2 - client1 front</h1>
       {error && <div style={{ color: "red" }}>Error: {error}</div>}
-      {email && <div style={{ color: "black" }}>Email: {email}</div>}
-      {username && <div style={{ color: "black" }}>User Name: {username}</div>}
-      {firstName && (
-        <div style={{ color: "black" }}>First Name: {firstName}</div>
-      )}
-      {surname && <div style={{ color: "black" }}>Surname: {surname}</div>}
-      {birthDate && (
-        <div style={{ color: "black" }}>Birthdate: {birthDate}</div>
-      )}
       {!logged && !profile && (
         <div>
           <button type="button" onClick={handleOauthLogin}>
