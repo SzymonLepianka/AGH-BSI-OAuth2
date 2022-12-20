@@ -84,7 +84,7 @@ public class GetUserData {
         user.setUsername(user_username);
         user.setSurname(user_surname);
         user.setBirthDate(user_birthdate);
-        if (allUsersFromDataBase.stream().anyMatch(x -> x.getUsername().equals(user.getUsername()))) {
+        if (allUsersFromDataBase.stream().anyMatch(x -> x.getUsername() != null && x.getUsername().equals(user.getUsername()))) {
             usersAccessService.updateOnUsername(user);
         } else {
             usersAccessService.create(user);

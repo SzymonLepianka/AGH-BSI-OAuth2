@@ -31,7 +31,7 @@ public class WebController {
 
     @GetMapping(value = "/login", params = "clientID")
     @ResponseBody
-    public ResponseEntity<String> loginFormWithClientID(@RequestParam String clientID, HttpServletResponse httpServletResponse, Model model) {
+    public ResponseEntity<String> handleLoginWithClientID(@RequestParam String clientID, HttpServletResponse httpServletResponse, Model model) {
         model.addAttribute("clientID", clientID);
         System.out.println("kontroler: loginFormWithClientID (clientID=" + clientID + ")");
 
@@ -48,7 +48,7 @@ public class WebController {
                 var cookies = request.getCookies();
                 for (var cookie : cookies) {
                     if (cookie.getName().startsWith("AccessToken") && validateToken.validateToken(cookie.getValue())) {
-                        var modelResponse = logInUser.handle(cookie.getValue(), clientID);
+                        var modelResponse = logInUser.handleLoginWithClientID(cookie.getValue(), clientID);
                         System.out.println("Tworzenie nowego AuthCode");
 
                         // dodaje cookie do response
@@ -73,9 +73,9 @@ public class WebController {
         }
     }
 
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/loginForAuthCode")
     @ResponseBody
-    public ResponseEntity<String> handleLogin(@RequestBody Map<String, String> json, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<String> handleLoginForAuthCode(@RequestBody Map<String, String> json, HttpServletResponse httpServletResponse) {
         System.out.println("kontroler: handleLogin (POST)");
 
         String username = json.get("username");
@@ -83,7 +83,7 @@ public class WebController {
         String clientID = json.get("clientID");
 
         try {
-            var modelResponse = logInUser.handle(username, password, clientID, passwordEncoder);
+            var modelResponse = logInUser.handleLoginForAuthCode(username, password, clientID, passwordEncoder);
 
             // dodaje cookie do response
             var authCode = (AuthCode) modelResponse.content;
@@ -95,6 +95,27 @@ public class WebController {
             return new ResponseEntity<>(authCode.getContent(), HttpStatus.OK);
 //            return WebView.LoginView(modelResponse, httpServletResponse);
 
+        } catch (ResponseStatusException rse) {
+            rse.printStackTrace();
+            return new ResponseEntity<>(rse.getReason(), rse.getStatus());
+        }
+    }
+
+    @PostMapping(value = "/login")
+    @ResponseBody
+    public ResponseEntity<String> handleLogin(@RequestBody Map<String, String> json) {
+        System.out.println("kontroler: handleLogin (POST)");
+
+        String username = json.get("username");
+        String password = json.get("password");
+        String clientID = json.get("clientID");
+
+        try {
+            if (logInUser.handleLogin(username, password, clientID, passwordEncoder)) {
+                return new ResponseEntity<>("true", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("false", HttpStatus.UNAUTHORIZED);
+            }
         } catch (ResponseStatusException rse) {
             rse.printStackTrace();
             return new ResponseEntity<>(rse.getReason(), rse.getStatus());

@@ -59,7 +59,7 @@ public class LogInUser {
     }
 
 
-    public Response handle(String accessToken, String clientID) {
+    public Response handleLoginWithClientID(String accessToken, String clientID) {
         Integer userID = getUserIDFromToken(accessToken);
 
         var users = usersAccessService.readAll();
@@ -93,14 +93,14 @@ public class LogInUser {
         return authenticatingClient.handle(params);
     }
 
-    public Response handle(String username, String password, String clientID, PasswordEncoder passwordEncoder) {
+    public Response handleLoginForAuthCode(String username, String password, String clientID, PasswordEncoder passwordEncoder) {
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
         if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User " + username + " does not exist in the database (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User " + username + " does not exist in the database (LogInUser)");
         }
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is incorrect (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The password is incorrect (LogInUser)");
         }
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
@@ -128,5 +128,25 @@ public class LogInUser {
         params.put("scopes", scopesBuilder.toString());
         params.put("userID", String.valueOf(user.get().getUserId()));
         return authenticatingClient.handle(params);
+    }
+
+    public boolean handleLogin(String username, String password, String clientID, PasswordEncoder passwordEncoder) {
+        var users = usersAccessService.readAll();
+        var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
+
+        if (user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User " + username + " does not exist in the database (LogInUser)");
+        }
+
+        if (!passwordEncoder.matches(password, user.get().getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The password is incorrect (LogInUser)");
+        }
+
+        // sprawdzam czy klient o danych clientId w params istnieje w bazie danych
+        if (appsAccessService.readById((Integer.parseInt(clientID))) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client with clientID=" + clientID + " does not exist");
+        }
+
+        return true;
     }
 }

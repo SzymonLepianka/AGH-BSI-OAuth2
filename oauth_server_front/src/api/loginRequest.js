@@ -1,14 +1,14 @@
 import axios from "axios";
-import { OAUTH_SERVER_URL } from "./config";
+import { CLIENT_ID, OAUTH_SERVER_URL } from "./config";
 
 export default (username, password) => {
   return axios
     .post(
-      `${OAUTH_SERVER_URL}/web/login`,
+      `${OAUTH_SERVER_URL}/web/loginForAuthCode`,
       {
         username,
         password,
-        clientID: "1",
+        clientID: CLIENT_ID,
       },
       {
         withCredentials: true,
@@ -17,7 +17,4 @@ export default (username, password) => {
     .then((response) => {
       return response.data;
     })
-    .catch((error) => {
-      console.log(error);
-    });
 };

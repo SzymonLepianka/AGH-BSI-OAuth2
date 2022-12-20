@@ -65,10 +65,10 @@ export const HomePage = () => {
       {birthDate && (
         <div style={{ color: "black" }}>Birthdate: {birthDate}</div>
       )}
+      <br />
       <button type="button" onClick={handleLogout}>
         Logout OAuth2
       </button>
-      <br />
     </div>
   );
 };
