@@ -20,14 +20,21 @@ export const OauthLoginPage = () => {
   const handleOauthLogin = (e) => {
     e.preventDefault();
     oauthLoginRequest(username, password, clientID)
-      .then(() => {
-        navigate("/login-success");
-        timeout(1500).then(() => {
-          window.close();
-        });
+      .then((res) => {
+        if (res.status === 200) {
+          navigate("/define-scope", {
+            state: {
+              username: username,
+              password: password,
+              clientID: clientID,
+            },
+          });
+        } else {
+          setError(res.data);
+        }
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err.message + ": " + err.response.data);
       });
   };
 
