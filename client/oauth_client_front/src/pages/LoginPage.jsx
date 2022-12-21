@@ -9,7 +9,7 @@ import {
   OAUTH_SERVER_FRONT_URL,
 } from "../api/config";
 import { SessionContext } from "../App";
-import { getSessionCookie } from "../middleware/session";
+import { checkAuthCodeCookie, getSessionCookie } from "../middleware/session";
 import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
@@ -47,6 +47,10 @@ export const LoginPage = () => {
     var timer = setInterval(function () {
       if (myWindow.closed) {
         clearInterval(timer);
+        if (!checkAuthCodeCookie()) {
+          setError("The user did not authorize the app.");
+          return;
+        }
         accessTokenRequest()
           .then(() => {
             setSession(getSessionCookie());

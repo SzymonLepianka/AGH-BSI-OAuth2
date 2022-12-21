@@ -20,13 +20,27 @@ export const HomePage = () => {
 
   useEffect(() => {
     if (session) {
-      userDataRequest().then((userData) => {
-        setEmail(userData.email);
-        setFirstName(userData.first_name);
-        setSurname(userData.surname);
-        setUsername(userData.username);
-        setBirthDate(userData.birth_date);
-      });
+      userDataRequest()
+        .then((userData) => {
+          setEmail(userData.email);
+          setFirstName(userData.first_name);
+          setSurname(userData.surname);
+          setUsername(userData.username);
+          setBirthDate(userData.birth_date);
+        })
+        .catch((err) => {
+          setError(err.message + ": " + err.response.data);
+          if (err.response.status === 401) {
+            logoutRequest(session)
+              .then(() => {
+                setSession("");
+                navigate("/login");
+              })
+              .catch((err) => {
+                setError(err.message);
+              });
+          }
+        });
     }
   });
 

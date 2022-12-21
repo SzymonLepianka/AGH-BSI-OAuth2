@@ -34,7 +34,8 @@ export const OauthLoginPage = () => {
         }
       })
       .catch((err) => {
-        setError(err.message + ": " + err.response.data);
+        console.log(err);
+        setError(err.message);
       });
   };
 

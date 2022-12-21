@@ -15,8 +15,8 @@ export default (username, password, clientID) => {
       }
     )
     .then((response) => {
-      if (response === 200) {
-        return response.data;
+      if (response.status === 200) {
+        return response;
       } else {
         throw new Error(response.status + " " + response.data);
       }

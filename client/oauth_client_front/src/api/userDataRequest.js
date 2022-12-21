@@ -15,7 +15,4 @@ export default () => {
         throw new Error("Getting user data failed (" + response.status + ")");
       }
     })
-    .catch((error) => {
-      console.log(error);
-    });
 };

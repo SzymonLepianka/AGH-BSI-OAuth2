@@ -27,3 +27,15 @@ export const removeClientIdCookies = () => {
     }
   }
 };
+
+export const checkAuthCodeCookie = () => {
+  const cookieManager = new Cookies();
+  const cookies = cookieManager.getAll();
+
+  for (const cookie in cookies) {
+    if (cookie === "AuthCode") {
+      return true;
+    }
+  }
+  return false;
+};
