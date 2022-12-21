@@ -3,6 +3,7 @@ import oauthLoginRequest from "../api/oauthLoginRequest";
 import { useNavigate, useParams } from "react-router-dom";
 import { SessionContext } from "../App";
 import oauthAlreadyLoggedRequest from "../api/oauthAlreadyLoggedRequest";
+import Cookies from "js-cookie";
 
 export const OauthLoginPage = () => {
   const { clientID } = useParams();
@@ -48,14 +49,19 @@ export const OauthLoginPage = () => {
             window.close();
           });
         } else if (res === "loginForm") {
+          console.log("User should log in!");
           return;
         } else {
-          //TODO zwrócono AuthCode
-          console.log(res);
+          navigate("/define-scope", {
+            state: {
+              clientID: clientID,
+              authCode: res,
+            },
+          });
         }
       });
     } else {
-      console.log("nie ma sesji");
+      console.log("No session! User should log in!");
     }
   });
 

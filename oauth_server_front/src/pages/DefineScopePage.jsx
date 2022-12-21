@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import oauthLoginForAuthCodeRequest from "../api/oauthLoginForAuthCodeRequest";
+import Cookies from "js-cookie";
 
 export const DefineScopePage = () => {
   const [error, setError] = useState("");
@@ -18,11 +19,12 @@ export const DefineScopePage = () => {
   const clientID = state ? state.clientID : undefined;
   const password = state ? state.password : undefined;
   const username = state ? state.username : undefined;
+  const authCode = state ? state.authCode : undefined;
 
   useEffect(() => {
     if (
-      clientID === undefined ||
-      password === undefined ||
+      clientID === undefined &&
+      password === undefined &&
       username === undefined
     ) {
       navigate("/");
@@ -31,6 +33,16 @@ export const DefineScopePage = () => {
 
   const handleAuthorizeApp = (e) => {
     e.preventDefault();
+
+    if (authCode !== undefined) {
+      Cookies.set("AuthCode", authCode, { path: "/" });
+      navigate("/login-success");
+      timeout(1500).then(() => {
+        window.close();
+      });
+      return;
+    }
+
     oauthLoginForAuthCodeRequest(username, password, clientID)
       .then(() => {
         navigate("/login-success");
