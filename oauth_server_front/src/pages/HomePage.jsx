@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SessionContext } from "../App";
 import userDataRequest from "../api/userDataRequest";
 import logoutRequest from "../api/logoutRequest";
+import { removeCookie } from "../middleware/session";
 
 export const HomePage = () => {
   const [error, setError] = useState("");
@@ -18,14 +19,21 @@ export const HomePage = () => {
 
   useEffect(() => {
     if (session) {
-      userDataRequest(session).then((res) => {
-        setEmail(res.user_email);
-        setFirstName(res.user_firstname);
-        setSurname(res.user_surname);
-        setUsername(res.user_username);
-        setBirthDate(res.user_birthdate);
-        setPhoneNumber(res.user_phonenumber);
-      });
+      userDataRequest(session)
+        .then((res) => {
+          setEmail(res.user_email);
+          setFirstName(res.user_firstname);
+          setSurname(res.user_surname);
+          setUsername(res.user_username);
+          setBirthDate(res.user_birthdate);
+          setPhoneNumber(res.user_phonenumber);
+        })
+        .catch((err) => {
+          setError(err.message + ": " + err.response.data);
+          removeCookie(session);
+          setSession("");
+          navigate("/login");
+        });
     }
   });
 

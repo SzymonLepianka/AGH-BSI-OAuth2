@@ -13,6 +13,17 @@ export const getSessionCookie = () => {
   return "";
 };
 
+export const removeCookie = (cookieContent) => {
+  const cookieManager = new Cookies();
+  const cookies = cookieManager.getAll();
+
+  for (const cookie in cookies) {
+    if (cookies[cookie] === cookieContent) {
+      cookieManager.remove(cookie);
+    }
+  }
+};
+
 export const removeAllCookies = () => {
   const cookieManager = new Cookies();
   const cookies = cookieManager.getAll();
