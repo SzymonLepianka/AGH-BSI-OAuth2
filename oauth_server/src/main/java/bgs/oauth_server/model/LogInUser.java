@@ -97,10 +97,12 @@ public class LogInUser {
         var users = usersAccessService.readAll();
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
         if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User " + username + " does not exist in the database (LogInUser)");
+            System.out.println("User " + username + " does not exist in the database (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password for user: " + username);
         }
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The password is incorrect (LogInUser)");
+            System.out.println("The password is incorrect (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password for user: " + username);
         }
         var params = new HashMap<String, String>();
         params.put("clientID", clientID);
@@ -135,11 +137,13 @@ public class LogInUser {
         var user = users.stream().filter(x -> x.getUsername().equals(username)).findFirst();
 
         if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User " + username + " does not exist in the database (LogInUser)");
+            System.out.println("User " + username + " does not exist in the database (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password for user: " + username);
         }
 
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The password is incorrect (LogInUser)");
+            System.out.println("The password is incorrect (LogInUser)");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password for user: " + username);
         }
 
         // sprawdzam czy klient o danych clientId w params istnieje w bazie danych

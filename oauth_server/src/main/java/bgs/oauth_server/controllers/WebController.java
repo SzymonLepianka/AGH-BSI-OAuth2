@@ -53,9 +53,9 @@ public class WebController {
 
                         // dodaje cookie do response
                         var authCode = (AuthCode) modelResponse.content;
-                        var cookieAuthCode = new Cookie("AuthCode", authCode.getContent());
-                        cookieAuthCode.setPath("/");
-                        httpServletResponse.addCookie(cookieAuthCode);
+//                        var cookieAuthCode = new Cookie("AuthCode", authCode.getContent());
+//                        cookieAuthCode.setPath("/");
+//                        httpServletResponse.addCookie(cookieAuthCode);
 
                         // zamiast strony "alreadyLogged" zwraca AuthCode
                         return new ResponseEntity<>(authCode.getContent(), HttpStatus.OK);
@@ -96,7 +96,6 @@ public class WebController {
 //            return WebView.LoginView(modelResponse, httpServletResponse);
 
         } catch (ResponseStatusException rse) {
-            rse.printStackTrace();
             return new ResponseEntity<>(rse.getReason(), rse.getStatus());
         }
     }
