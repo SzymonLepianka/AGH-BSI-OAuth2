@@ -3,12 +3,14 @@ import { GOOGLE_CLIENT_ID } from "../api/config";
 
 function GoogleLoginComponent(props) {
   const onSuccess = (res) => {
-    console.log("LOGIN SSUCCESS! Current user: ", res.profileObj);
+    console.log("LOGIN SUCCESS! Current user: ", res.profileObj);
     props.setProfile(res.profileObj);
+    props.setError("");
   };
 
   const onFailure = (res) => {
     console.log("LOGIN FAILED! res: ", res);
+    props.setError("LOGIN FAILED! res: ", res);
   };
 
   return (

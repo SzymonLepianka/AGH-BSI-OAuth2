@@ -68,7 +68,7 @@ export const LoginPage = () => {
   return (
     <div>
       <h1>Login with OAuth2 - client1 front</h1>
-      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+      {error && !profile && <div style={{ color: "red" }}>Error: {error}</div>}
       {!logged && !profile && (
         <div>
           <button type="button" onClick={handleOauthLogin}>
@@ -88,10 +88,13 @@ export const LoginPage = () => {
               <p>Email Address: {profile.email}</p>
               <br />
               <br />
-              <GoogleLogoutComponent setProfile={setProfile} />
+              <GoogleLogoutComponent
+                setProfile={setProfile}
+                setError={setError}
+              />
             </div>
           ) : (
-            <GoogleLoginComponent setProfile={setProfile} />
+            <GoogleLoginComponent setProfile={setProfile} setError={setError} />
           )}
         </div>
       )}

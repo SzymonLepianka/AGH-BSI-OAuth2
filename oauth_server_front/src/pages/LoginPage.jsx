@@ -23,7 +23,11 @@ export const LoginPage = () => {
         });
       })
       .catch((err) => {
-        setError(err.message + ": " + err.response.data);
+        if (err.response) {
+          setError(err.message + ": " + err.response.data);
+        } else {
+          setError(err.message);
+        }
       });
   };
 

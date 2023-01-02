@@ -5,6 +5,7 @@ function GoogleLogoutComponent(props) {
   const onSuccess = (res) => {
     console.log("Log out successfull!");
     props.setProfile(null);
+    props.setError("");
   };
 
   return (

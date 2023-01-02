@@ -29,7 +29,11 @@ export const HomePage = () => {
           setPhoneNumber(res.user_phonenumber);
         })
         .catch((err) => {
-          setError(err.message + ": " + err.response.data);
+          if (err.response) {
+            setError(err.message + ": " + err.response.data);
+          } else {
+            setError(err.message);
+          }
           removeCookie(session);
           setSession("");
           navigate("/login");
